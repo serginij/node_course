@@ -1,0 +1,20 @@
+{
+  "name": "002-console",
+  "version": "1.0.0",
+  "description": "",
+  "main": "task1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serginij/node_course.git"
+  },
+  "author": "serginij",
+  "license": "MIT",
+  "homepage": "https://github.com/serginij/node_course#readme",
+  "dependencies": {
+    "date-fns": "^2.16.1",
+    "yargs": "^16.2.0"
+  }
+}
