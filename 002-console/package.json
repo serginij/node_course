@@ -12,7 +12,7 @@
   },
   "author": "serginij <kotlizkiy@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/serginij/node_course#readme",
+  "homepage": "https://github.com/serginij/node_course/tree/master/002-console",
   "dependencies": {
     "date-fns": "^2.16.1",
     "yargs": "^16.2.0"
