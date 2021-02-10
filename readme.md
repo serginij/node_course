@@ -13,3 +13,7 @@ Here you can find my homeworks during learning Node.js (Express, Nest.js)
 - 004-stream
 
   Game tails with log files
+
+- 005-http
+
+  Simple weather app that fetch data from api

@@ -1,0 +1,23 @@
+{
+  "name": "005-http",
+  "version": "1.0.0",
+  "description": "#### Задание 1",
+  "main": "index.js",
+  "scripts": {
+    "start": "node -r dotenv/config index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serginij/node_course.git"
+  },
+  "author": "serginij <kotlizkiy@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/serginij/node_course/tree/master/005-http",
+  "dependencies": {
+    "yargs": "^16.2.0"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0"
+  }
+}
