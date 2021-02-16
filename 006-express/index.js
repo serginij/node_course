@@ -1,11 +1,12 @@
 const express = require('express');
 const cors = require('cors');
-const formData = require('express-form-data');
+const bodyParser = require('body-parser');
 const store = require('./store');
 
 const app = express();
 app.use(cors());
-app.use(formData.parse());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 3000;
 
@@ -59,7 +60,7 @@ app.put('/api/books/:id', (req, res) => {
   const { id } = req.params;
   const { booksStore } = store;
 
-  const { valid, errors } = booksStore.validateBook(book, true);
+  const { valid, errors } = booksStore.validateBook({ ...book, id }, true);
 
   if (!valid) {
     res.status(400).json({ message: 'Invalid data format', errors });
