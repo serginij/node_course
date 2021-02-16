@@ -68,11 +68,11 @@ router.delete('/:id', (req, res) => {
   }
 });
 
-router.post('/:id/upload-text', fileMiddleware.single(), (req, res) => {
-  if (req.file) {
-    const { path, filename } = req.file;
-    const { id } = req.params;
-    console.log(path, req.file);
+router.post('/:id/upload-text', fileMiddleware.single('data'), (req, res) => {
+  const { file } = req;
+  const { id } = req.params;
+  if (file) {
+    const { path, filename } = file;
     const { updateBook, books } = booksStore;
 
     const book = books[id];
@@ -91,7 +91,6 @@ router.post('/:id/upload-text', fileMiddleware.single(), (req, res) => {
 
 router.get('/:id/download', (req, res) => {
   const { id } = req.params;
-  console.log(path, req.file);
   const { books } = booksStore;
 
   const book = books[id];
@@ -101,8 +100,6 @@ router.get('/:id/download', (req, res) => {
   }
 
   const { fileBook, fileName } = book;
-
-  console.log(path.join(__dirname, '..', fileBook));
 
   res.download(path.join(__dirname, '..', fileBook), fileName, (err) => {
     if (err) {
