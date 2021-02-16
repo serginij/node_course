@@ -18,6 +18,6 @@ Here you can find my homeworks during learning Node.js (Express, Nest.js)
 
   Simple weather app that fetch data from api
 
-- 006-express
+- library
 
   Library REST API

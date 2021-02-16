@@ -8,7 +8,8 @@ const books = {
     authors: 'noname',
     favorite: 'test',
     fileCover: 'file.png',
-    fileName: 'book.epub',
+    fileName: 'sample.txt',
+    fileBook: '/public/text/sample.txt',
   },
 };
 
