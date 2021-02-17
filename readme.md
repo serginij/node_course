@@ -17,3 +17,7 @@ Here you can find my homeworks during learning Node.js (Express, Nest.js)
 - 005-http
 
   Simple weather app that fetch data from api
+
+- 006-express
+
+  Library REST API
