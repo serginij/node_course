@@ -32,32 +32,35 @@ router.post('/', fileMiddleware.single('fileBook'), (req, res) => {
   const { createBook, validateBook } = booksStore;
 
   const book = { ...body, fileName: filename, fileBook: path };
-
-  const { valid, errors } = booksStore.validateBook(book);
+  const { valid, errors } = validateBook(book);
 
   if (!valid) {
     res.status(400).json({ message: 'Invalid data format', errors });
   } else {
-    const data = booksStore.createBook(book);
+    const data = createBook(book);
 
     res.status(201).json(data);
   }
 });
 
-router.post('/:id', fileMiddleware.single('fileBook'), (req, res) => {
+router.put('/:id', fileMiddleware.single('fileBook'), (req, res) => {
   const { file, body } = req;
   const { id } = req.params;
+
   const { path, filename } = file;
-  const { updateBook, validateBook } = booksStore;
+  const { updateBook, validateBook, books } = booksStore;
+
+  if (!books[id]) {
+    res.status(404).send('404 | book not found');
+  }
 
   const book = { ...body, fileName: filename, fileBook: path, id };
-
-  const { valid, errors } = booksStore.validateBook(book, true);
+  const { valid, errors } = validateBook(book, true);
 
   if (!valid) {
     res.status(400).json({ message: 'Invalid data format', errors });
   } else {
-    const data = booksStore.updateBook(book);
+    const data = updateBook(id, book);
     res.status(200).json(data);
   }
 });
