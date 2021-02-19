@@ -26,9 +26,12 @@ router.get('/:id', (req, res) => {
   res.status(200).json(book);
 });
 
-router.post('/', (req, res) => {
-  const book = req.body;
-  const { booksStore } = store;
+router.post('/', fileMiddleware.single('fileBook'), (req, res) => {
+  const { file, body } = req;
+  const { path, filename } = file;
+  const { createBook, validateBook } = booksStore;
+
+  const book = { ...body, fileName: filename, fileBook: path };
 
   const { valid, errors } = booksStore.validateBook(book);
 
@@ -41,17 +44,20 @@ router.post('/', (req, res) => {
   }
 });
 
-router.put('/:id', (req, res) => {
-  const book = req.body;
+router.post('/:id', fileMiddleware.single('fileBook'), (req, res) => {
+  const { file, body } = req;
   const { id } = req.params;
-  const { booksStore } = store;
+  const { path, filename } = file;
+  const { updateBook, validateBook } = booksStore;
 
-  const { valid, errors } = booksStore.validateBook({ ...book, id }, true);
+  const book = { ...body, fileName: filename, fileBook: path, id };
+
+  const { valid, errors } = booksStore.validateBook(book, true);
 
   if (!valid) {
     res.status(400).json({ message: 'Invalid data format', errors });
   } else {
-    const data = booksStore.updateBook(id, book);
+    const data = booksStore.updateBook(book);
     res.status(200).json(data);
   }
 });
@@ -65,27 +71,6 @@ router.delete('/:id', (req, res) => {
   } else {
     booksStore.deleteBook(id);
     res.status(200).json({ message: 'ok' });
-  }
-});
-
-router.post('/:id/upload-text', fileMiddleware.single('data'), (req, res) => {
-  const { file } = req;
-  const { id } = req.params;
-  if (file) {
-    const { path, filename } = file;
-    const { updateBook, books } = booksStore;
-
-    const book = books[id];
-
-    if (!book) {
-      res.status(404).json({ message: 'book not found' });
-    }
-
-    updateBook(id, { ...book, fileBook: path, fileName: filename });
-
-    res.status(201).json(path);
-  } else {
-    res.status(400).json({ message: 'No file provided' });
   }
 });
 

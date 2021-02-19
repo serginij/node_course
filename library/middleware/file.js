@@ -2,14 +2,14 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, 'public/text');
+    cb(null, 'public/book');
   },
   filename(req, file, cb) {
     cb(null, `${new Date().toISOString().replace(/:/g, '-')}-${file.originalname}`);
   },
 });
 
-const allowedTypes = ['text/plain'];
+const allowedTypes = ['text/plain', 'application/pdf'];
 
 const fileFilter = (req, file, cb) => {
   if (allowedTypes.includes(file.mimetype)) {

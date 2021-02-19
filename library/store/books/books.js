@@ -9,7 +9,7 @@ const books = {
     favorite: 'test',
     fileCover: 'file.png',
     fileName: 'sample.txt',
-    fileBook: '/public/text/sample.txt',
+    fileBook: '/public/book/sample.txt',
   },
 };
 
@@ -40,16 +40,20 @@ const validateBook = (book, checkId = false) => {
 
   let valid = true;
   const errors = [];
-  const keys = ['title', 'description', 'authors', 'favorite', 'fileCover', 'fileName'];
+  const keys = ['title', 'description', 'authors', 'favorite', 'fileCover', 'fileName', 'fileBook'];
 
   if (checkId) {
     keys.push('id');
   }
 
   keys.forEach((key) => {
-    if (typeof book[key] !== 'string') {
-      errors.push(key);
-      valid = false;
+    switch (key) {
+      default:
+        if (typeof book[key] !== 'string') {
+          errors.push(key);
+          valid = false;
+        }
+        break;
     }
   });
 
