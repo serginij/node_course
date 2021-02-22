@@ -72,11 +72,15 @@
   </div>
 </form>
 <script>
-  form.onsubmit = e => {
+  form.onsubmit = async e => {
     e.preventDefault()
-    fetch(``, {
+    const res = await fetch(``, {
       method: 'POST',
       body: new FormData(form)
     })
+
+    if([200, 201].includes(res.status)) {
+      location.replace('/books')
+    }
   }
 </script>
