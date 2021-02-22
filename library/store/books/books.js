@@ -40,7 +40,15 @@ const validateBook = (book, checkId = false) => {
 
   let valid = true;
   const errors = [];
-  const keys = ['title', 'description', 'authors', 'favorite', 'fileCover', 'fileName', 'fileBook'];
+  const keys = [
+    'title',
+    'description',
+    'authors',
+    'favorite',
+    'fileCover',
+    'fileName',
+    'fileBook',
+  ];
 
   if (checkId) {
     keys.push('id');
