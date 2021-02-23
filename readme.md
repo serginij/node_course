@@ -1,23 +1,52 @@
-# Backend Node.js course homeworks
+# Домашнее задание к занятию «2.2 Middleware»
 
-Here you can find my homeworks during learning Node.js (Express, Nest.js)
+**API CRUD** для работы с сущностью _«книга»_. Каждый экземпляр книги должен содержать следующую структуру данных:
 
-## Structure
+```typescript
+{
+  id: string,
+  title: string,
+  description: string,
+  authors: string,
+  favorite: string,
+  fileCover: string,
+  fileName: string,
+  fileBook: string
+}
+```
 
-- 002-console
+Дефолтные переменные находятся в конфигурационном файле `.env.example`
 
-  Simple console app that logs date with some options
+**Команда запуска**
 
-  Console game "Guess the number"
+`npm start`
 
-- 004-stream
+## Методы
 
-  Game tails with log files
+Формат данных в body - **JSON**
 
-- 005-http
+**POST `/api/books` | PUT `/api/books/:id`**
 
-  Simple weather app that fetch data from api
+_form-data_
 
-- library
+```typescript
+{
+  id: string,
+  title: string,
+  description: string,
+  authors: string,
+  favorite: string,
+  fileCover: string,
+  fileBook: File `.pdf or .txt`
+}
+```
 
-  Library REST API
+| метод    | url                       | действие                                    | комментарий                                                                                 |
+| -------- | ------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `POST`   | `/api/user/login`         | авторизация пользователя                    | метод всегда возвращает **Code: 201** и статичный объект: `{ id: 1, mail: "test@mail.ru" }` |
+| `GET`    | `/api/books`              | получить все книги                          | получаем массив всех книг                                                                   |
+| `GET`    | `/api/books/:id`          | получить книгу по **id**                    | получаем объект книги, если запись не найдено вернем **Code: 404**                          |
+| `POST`   | `/api/books`              | _(form-data)_ создать книгу                 | создаем книги и возврашаем ее же вместе с присвоенным **id**                                |
+| `PUT`    | `/api/books/:id`          | _(form-data)_ редактировать книгу по **id** | редактируем объект книги, если запись не найдено вернем **Code: 404**                       |
+| `DELETE` | `/api/books/:id`          | удалить книгу по **id**                     | удаляем книгу и возвращаем ответ: **'ok'**                                                  |
+| `GET`    | `/api/books/:id/download` | скачать файл с книгой по **id** книги       | скачивается файл в формате **.pdf** или **.txt**                                            |
