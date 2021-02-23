@@ -4,7 +4,7 @@
   "description": "Library REST API",
   "main": "index.js",
   "scripts": {
-    "start": "node -r dotenv/config index.js",
+    "start": "node index.js",
     "dev": "nodemon -- -r dotenv/config index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,7 +14,7 @@
   },
   "author": "serginij <kotlizkiy@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/serginij/node_course/tree/master/006-express",
+  "homepage": "https://github.com/serginij/node_course/tree/master/library",
   "devDependencies": {
     "dotenv": "^8.2.0",
     "eslint": "^7.20.0",
