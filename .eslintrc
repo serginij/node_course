@@ -1,0 +1,15 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 2020
+  },
+  "rules": {
+    "no-empty": "warn",
+    "no-cond-assign": ["error", "always"],
+    "for-direction": "off"
+  },
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "extends": ["eslint:recommended", "prettier"]
+}
