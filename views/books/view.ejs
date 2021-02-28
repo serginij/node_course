@@ -7,21 +7,24 @@
         <div class="card">
             <div class="card-body">
 
-                <h5 class="card-title"><%= book.title %></h5>
+                <div class='d-flex justify-content-between'>
+                    <h5 class="card-title"><%= book.title %></h5>
+                    <p class="card-text"><%= book.views %> views</p>
+                </div>
                 <b class='card-label'>ID</b>
-                <p class="card-text"><%= book.id %>.</p>
+                <p class="card-text"><%= book.id %></p>
                 <b class='card-label'>Description</b>
-                <p class="card-text"><%= book.description %>.</p>
+                <p class="card-text"><%= book.description %></p>
                 <b class='card-label'>Authors</b>
-                <p class="card-text"><%= book.authors %>.</p>
+                <p class="card-text"><%= book.authors %></p>
                 <b class='card-label'>Favorite</b>
-                <p class="card-text"><%= book.favorite %>.</p>
+                <p class="card-text"><%= book.favorite %></p>
                 <b class='card-label'>File cover</b>
-                <p class="card-text"><%= book.fileCover %>.</p>
+                <p class="card-text"><%= book.fileCover %></p>
                 <b class='card-label'>File name</b>
-                <p class="card-text"><%= book.fileName %>.</p>
+                <p class="card-text"><%= book.fileName %></p>
                 <b class='card-label'>Book file</b>
-                <p class="card-text"><%= book.fileBook %>.</p>
+                <p class="card-text"><%= book.fileBook %></p>
 
                 <div class="text-right">
                     <a class="btn btn-sm btn-primary" href="/books/update/<%= book.id %>">
