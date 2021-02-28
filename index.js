@@ -19,6 +19,6 @@ app.use('/', mainRouter);
 
 app.use(notFoundMiddleware);
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`App available on http://localhost:${PORT}`);
 });

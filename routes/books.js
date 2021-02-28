@@ -8,28 +8,35 @@ const { booksStore } = require('../store');
 const router = express.Router();
 
 const COUNTER_PORT = process.env.COUNTER_PORT || 3001;
+const COUNTER_HOST = process.env.COUNTER_HOST || 'localhost';
 
 router.get('/', (req, res) => {
   const { getBooks, setBooks } = booksStore;
   const books = getBooks();
 
   if (books.length === 0) {
-    http.get(`http://localhost:${COUNTER_PORT}/counter`, (response) => {
-      response
-        .on('data', (d) => {
-          const data = JSON.parse(d.toString());
+    http.get(
+      {
+        host: COUNTER_HOST,
+        port: COUNTER_PORT,
+        path: `/counter`,
+      },
+      (response) => {
+        response
+          .on('data', (d) => {
+            const data = JSON.parse(d.toString());
+            setBooks(data);
 
-          setBooks(data);
-
-          res.render('books/list', {
-            title: 'Books list',
-            books: Object.values(data),
+            res.render('books/list', {
+              title: 'Books list',
+              books: Object.values(data),
+            });
+          })
+          .on('error', () => {
+            res.redirect('/404');
           });
-        })
-        .on('error', () => {
-          res.redirect('/404');
-        });
-    });
+      },
+    );
   } else {
     res.render('books/list', {
       title: 'Books list',
@@ -62,7 +69,7 @@ router.get('/update/:id', (req, res) => {
 
 router.get('/:id', (req, res) => {
   const { id } = req.params;
-  const { books } = booksStore;
+  const { books, updateBook } = booksStore;
 
   if (!books[id]) {
     res.status(404).redirect('/404');
@@ -71,7 +78,7 @@ router.get('/:id', (req, res) => {
 
   const request = http.request(
     {
-      hostname: 'localhost',
+      host: COUNTER_HOST,
       port: COUNTER_PORT,
       method: 'POST',
       path: `/counter/${id}/incr`,
@@ -84,6 +91,7 @@ router.get('/:id', (req, res) => {
       response
         .on('data', (d) => {
           const data = JSON.parse(d.toString());
+          updateBook(id, data);
 
           res.render('books/view', {
             title: 'Book view',

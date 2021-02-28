@@ -4,15 +4,7 @@ const path = require('path');
 
 const router = express.Router();
 
-const filePath = path.join(
-  __dirname,
-  '..',
-  '..',
-  '..',
-  'public',
-  'counter',
-  'data.json',
-);
+const filePath = path.join(__dirname, '..', 'public', 'data.json');
 
 router.get('/', async (req, res) => {
   try {
