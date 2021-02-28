@@ -4,6 +4,12 @@
 
 https://serginij-express-library.herokuapp.com/
 
+## Локальный запуск
+
+`docker-compose up`
+
+## API
+
 Приложение для работы с сущностью _«книга»_. Каждый экземпляр книги должен содержать следующую структуру данных:
 
 ```typescript
