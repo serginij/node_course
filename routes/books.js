@@ -1,21 +1,48 @@
 const express = require('express');
 const path = require('path');
+const http = require('http');
 
-const store = require('../store');
 const { fileMiddleware } = require('../middleware');
 const { booksStore } = require('../store');
-const { createBook } = require('../store/books');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  const { booksStore } = store;
-  const books = booksStore.getBooks();
+const COUNTER_PORT = process.env.COUNTER_PORT || 3001;
+const COUNTER_HOST = process.env.COUNTER_HOST || 'localhost';
 
-  res.render('books/list', {
-    title: 'Books list',
-    books,
-  });
+router.get('/', (req, res) => {
+  const { getBooks, setBooks } = booksStore;
+  const books = getBooks();
+
+  if (books.length === 0) {
+    http.get(
+      {
+        host: COUNTER_HOST,
+        port: COUNTER_PORT,
+        path: `/counter`,
+      },
+      (response) => {
+        response
+          .on('data', (d) => {
+            const data = JSON.parse(d.toString());
+            setBooks(data);
+
+            res.render('books/list', {
+              title: 'Books list',
+              books: Object.values(data),
+            });
+          })
+          .on('error', () => {
+            res.redirect('/404');
+          });
+      },
+    );
+  } else {
+    res.render('books/list', {
+      title: 'Books list',
+      books,
+    });
+  }
 });
 
 router.get('/create', (req, res) => {
@@ -42,23 +69,49 @@ router.get('/update/:id', (req, res) => {
 
 router.get('/:id', (req, res) => {
   const { id } = req.params;
-  const { booksStore } = store;
-  const book = booksStore.books[id];
+  const { books, updateBook } = booksStore;
 
-  if (!book) {
+  if (!books[id]) {
     res.status(404).redirect('/404');
   }
+  const book = JSON.stringify(books[id]);
 
-  res.render('books/view', {
-    title: 'Book view',
-    book,
-  });
+  const request = http.request(
+    {
+      host: COUNTER_HOST,
+      port: COUNTER_PORT,
+      method: 'POST',
+      path: `/counter/${id}/incr`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': book.length,
+      },
+    },
+    (response) => {
+      response
+        .on('data', (d) => {
+          const data = JSON.parse(d.toString());
+          updateBook(id, data);
+
+          res.render('books/view', {
+            title: 'Book view',
+            book: data,
+          });
+        })
+        .on('error', () => {
+          res.redirect('/404');
+        });
+    },
+  );
+
+  request.write(book);
+  request.end();
 });
 
 router.post('/create', fileMiddleware.single('fileBook'), (req, res) => {
   const { file, body } = req;
   const { path, filename } = file;
-  const { validateBook } = booksStore;
+  const { validateBook, createBook } = booksStore;
 
   const book = { ...body, fileName: filename, fileBook: path };
   const { valid, errors } = validateBook(book);

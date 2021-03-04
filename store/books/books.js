@@ -1,20 +1,13 @@
 const { v4: uuid } = require('uuid');
 
-const books = {
-  dsofijksdf: {
-    id: 'dsofijksdf',
-    title: 'Title',
-    description: 'Description',
-    authors: 'noname',
-    favorite: 'test',
-    fileCover: 'file.png',
-    fileName: 'sample.txt',
-    fileBook: '/public/book/sample.txt',
-  },
-};
+const books = {};
 
 const getBooks = () => {
   return Object.values(books);
+};
+
+const setBooks = (data) => {
+  Object.assign(books, data);
 };
 
 const createBook = (book) => {
@@ -75,4 +68,5 @@ module.exports = {
   updateBook,
   deleteBook,
   validateBook,
+  setBooks,
 };
