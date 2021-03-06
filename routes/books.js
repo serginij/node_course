@@ -4,45 +4,52 @@ const http = require('http');
 
 const { fileMiddleware } = require('../middleware');
 const { booksStore } = require('../store');
+const { Book } = require('../models');
 
 const router = express.Router();
 
 const COUNTER_PORT = process.env.COUNTER_PORT || 3001;
 const COUNTER_HOST = process.env.COUNTER_HOST || 'localhost';
 
-router.get('/', (req, res) => {
-  const { getBooks, setBooks } = booksStore;
-  const books = getBooks();
+router.get('/', async (req, res) => {
+  // const { getBooks, setBooks } = booksStore;
+  // const books = getBooks();
+  const books = await Book.find().select('-__v');
 
-  if (books.length === 0) {
-    http.get(
-      {
-        host: COUNTER_HOST,
-        port: COUNTER_PORT,
-        path: `/counter`,
-      },
-      (response) => {
-        response
-          .on('data', (d) => {
-            const data = JSON.parse(d.toString());
-            setBooks(data);
+  res.render('books/list', {
+    title: 'Books list',
+    books,
+  });
 
-            res.render('books/list', {
-              title: 'Books list',
-              books: Object.values(data),
-            });
-          })
-          .on('error', () => {
-            res.redirect('/404');
-          });
-      },
-    );
-  } else {
-    res.render('books/list', {
-      title: 'Books list',
-      books,
-    });
-  }
+  // if (books.length === 0) {
+  //   http.get(
+  //     {
+  //       host: COUNTER_HOST,
+  //       port: COUNTER_PORT,
+  //       path: `/counter`,
+  //     },
+  //     (response) => {
+  //       response
+  //         .on('data', (d) => {
+  //           const data = JSON.parse(d.toString());
+  //           setBooks(data);
+
+  //           res.render('books/list', {
+  //             title: 'Books list',
+  //             books: Object.values(data),
+  //           });
+  //         })
+  //         .on('error', () => {
+  //           res.redirect('/404');
+  //         });
+  //     },
+  //   );
+  // } else {
+  //   res.render('books/list', {
+  //     title: 'Books list',
+  //     books,
+  //   });
+  // }
 });
 
 router.get('/create', (req, res) => {
@@ -52,10 +59,11 @@ router.get('/create', (req, res) => {
   });
 });
 
-router.get('/update/:id', (req, res) => {
+router.get('/update/:id', async (req, res) => {
   const { id } = req.params;
-  const { books } = booksStore;
-  const book = books[id];
+  // const { books } = booksStore;
+  // const book = books[id];
+  const book = await Book.findById(id);
 
   if (!book) {
     res.status(404).redirect('/404');
@@ -67,95 +75,136 @@ router.get('/update/:id', (req, res) => {
   });
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
   const { books, updateBook } = booksStore;
 
-  if (!books[id]) {
-    res.status(404).redirect('/404');
+  try {
+    const book = await Book.findById(id).select('-__v');
+    res.render('books/view', {
+      title: 'Book view',
+      book,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json();
   }
-  const book = JSON.stringify(books[id]);
 
-  const request = http.request(
-    {
-      host: COUNTER_HOST,
-      port: COUNTER_PORT,
-      method: 'POST',
-      path: `/counter/${id}/incr`,
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': book.length,
-      },
-    },
-    (response) => {
-      response
-        .on('data', (d) => {
-          const data = JSON.parse(d.toString());
-          updateBook(id, data);
+  // if (!books[id]) {
+  //   res.status(404).redirect('/404');
+  // }
+  // const book = JSON.stringify(books[id]);
 
-          res.render('books/view', {
-            title: 'Book view',
-            book: data,
-          });
-        })
-        .on('error', () => {
-          res.redirect('/404');
-        });
-    },
-  );
+  // const request = http.request(
+  //   {
+  //     host: COUNTER_HOST,
+  //     port: COUNTER_PORT,
+  //     method: 'POST',
+  //     path: `/counter/${id}/incr`,
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'Content-Length': book.length,
+  //     },
+  //   },
+  //   (response) => {
+  //     response
+  //       .on('data', (d) => {
+  //         const data = JSON.parse(d.toString());
+  //         updateBook(id, data);
 
-  request.write(book);
-  request.end();
+  //         res.render('books/view', {
+  //           title: 'Book view',
+  //           book: data,
+  //         });
+  //       })
+  //       .on('error', () => {
+  //         res.redirect('/404');
+  //       });
+  //   },
+  // );
+
+  // request.write(book);
+  // request.end();
 });
 
-router.post('/create', fileMiddleware.single('fileBook'), (req, res) => {
+router.post('/create', fileMiddleware.single('fileBook'), async (req, res) => {
   const { file, body } = req;
-  const { path, filename } = file;
-  const { validateBook, createBook } = booksStore;
+  // const { path, filename } = file;
+  // const { validateBook, createBook } = booksStore;
 
-  const book = { ...body, fileName: filename, fileBook: path };
-  const { valid, errors } = validateBook(book);
+  const book = new Book(body);
 
-  if (!valid) {
-    res.status(400).json({ message: 'Invalid data format', errors });
-  } else {
-    createBook(book);
+  // const book = { ...body, fileName: filename, fileBook: path };
+  // const { valid, errors } = validateBook(book);
+
+  try {
+    await book.save();
     res.status(200).redirect('/books');
+  } catch (err) {
+    console.error(err);
+    res.status(500).json();
   }
+
+  // if (!valid) {
+  //   res.status(400).json({ message: 'Invalid data format', errors });
+  // } else {
+  //   createBook(book);
+  //   res.status(200).redirect('/books');
+  // }
 });
 
-router.post('/update/:id', fileMiddleware.single('fileBook'), (req, res) => {
-  const { file, body } = req;
+router.post(
+  '/update/:id',
+  fileMiddleware.single('fileBook'),
+  async (req, res) => {
+    const { file, body } = req;
+    const { id } = req.params;
+
+    // const { path, filename } = file;
+    // const { updateBook, validateBook, books } = booksStore;
+
+    // if (!books[id]) {
+    //   res.status(404).redirect('/404');
+    // }
+
+    // const book = { ...body, fileName: filename, fileBook: path, id };
+    // const { valid, errors } = validateBook(book, true);
+
+    try {
+      await Book.findByIdAndUpdate(id, body);
+      res.status(200).redirect('/books');
+    } catch (err) {
+      console.error(err);
+      res.status(500).json();
+    }
+
+    // if (!valid) {
+    //   res.status(400).json({ message: 'Invalid data format', errors });
+    // } else {
+    //   updateBook(id, book);
+    //   res.status(200).redirect('/books');
+    // }
+  },
+);
+
+router.post('/delete/:id', async (req, res) => {
   const { id } = req.params;
+  // const { books, deleteBook } = booksStore;
 
-  const { path, filename } = file;
-  const { updateBook, validateBook, books } = booksStore;
-
-  if (!books[id]) {
-    res.status(404).redirect('/404');
+  try {
+    await Book.findByIdAndDelete(id);
+    res.status(204).redirect('/books');
+  } catch (err) {
+    console.error(err);
+    res.status(500).json();
   }
 
-  const book = { ...body, fileName: filename, fileBook: path, id };
-  const { valid, errors } = validateBook(book, true);
-
-  if (!valid) {
-    res.status(400).json({ message: 'Invalid data format', errors });
-  } else {
-    updateBook(id, book);
-    res.status(200).redirect('/books');
-  }
-});
-
-router.post('/delete/:id', (req, res) => {
-  const { id } = req.params;
-  const { books, deleteBook } = booksStore;
-
-  if (!books[id]) {
-    res.status(404).redirect('/404');
-  } else {
-    deleteBook(id);
-    res.status(200).redirect('/books');
-  }
+  // if (!books[id]) {
+  //   res.status(404).redirect('/404');
+  // } else {
+  //   deleteBook(id);
+  //   res.status(200).redirect('/books');
+  // }
 });
 
 router.get('/:id/download', (req, res) => {
