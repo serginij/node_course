@@ -25,7 +25,6 @@ app.use(notFoundMiddleware);
 
 const start = async () => {
   try {
-    console.log(DB_URL);
     await mongoose.connect(DB_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,

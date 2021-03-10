@@ -3,7 +3,6 @@ const path = require('path');
 const http = require('http');
 
 const { fileMiddleware } = require('../middleware');
-const { booksStore } = require('../store');
 const { Book } = require('../models');
 
 const router = express.Router();
@@ -16,40 +15,40 @@ router.get('/', async (req, res) => {
   // const books = getBooks();
   const books = await Book.find().select('-__v');
 
-  res.render('books/list', {
-    title: 'Books list',
-    books,
-  });
+  if (books.length !== 0) {
+    http.get(
+      {
+        host: COUNTER_HOST,
+        port: COUNTER_PORT,
+        path: `/counter`,
+      },
+      (response) => {
+        response
+          .on('data', (d) => {
+            const viewsById = JSON.parse(d.toString());
+            console.log(viewsById);
 
-  // if (books.length === 0) {
-  //   http.get(
-  //     {
-  //       host: COUNTER_HOST,
-  //       port: COUNTER_PORT,
-  //       path: `/counter`,
-  //     },
-  //     (response) => {
-  //       response
-  //         .on('data', (d) => {
-  //           const data = JSON.parse(d.toString());
-  //           setBooks(data);
+            const formatted = books.map((book) => ({
+              ...book,
+              views: viewsById[book._id],
+            }));
 
-  //           res.render('books/list', {
-  //             title: 'Books list',
-  //             books: Object.values(data),
-  //           });
-  //         })
-  //         .on('error', () => {
-  //           res.redirect('/404');
-  //         });
-  //     },
-  //   );
-  // } else {
-  //   res.render('books/list', {
-  //     title: 'Books list',
-  //     books,
-  //   });
-  // }
+            res.render('books/list', {
+              title: 'Books list',
+              books: formatted,
+            });
+          })
+          .on('error', () => {
+            res.redirect('/404');
+          });
+      },
+    );
+  } else {
+    res.render('books/list', {
+      title: 'Books list',
+      books,
+    });
+  }
 });
 
 router.get('/create', (req, res) => {
@@ -77,88 +76,103 @@ router.get('/update/:id', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  const { books, updateBook } = booksStore;
 
   try {
     const book = await Book.findById(id).select('-__v');
-    res.render('books/view', {
-      title: 'Book view',
-      book,
-    });
+    // res.render('books/view', {
+    //   title: 'Book view',
+    //   book,
+    // });
+
+    // if (!books[id]) {
+    //   res.status(404).redirect('/404');
+    // }
+    // const book = JSON.stringify(books[id]);
+
+    const request = http.request(
+      {
+        host: COUNTER_HOST,
+        port: COUNTER_PORT,
+        method: 'POST',
+        path: `/counter/${id}/incr`,
+      },
+      (response) => {
+        response
+          .on('data', (d) => {
+            const data = JSON.parse(d.toString());
+            // updateBook(id, data);
+            // console.log(data)
+
+            res.render('books/view', {
+              title: 'Book view',
+              book: { ...book, views: 0 },
+            });
+          })
+          .on('error', () => {
+            res.redirect('/404');
+          });
+      },
+    );
+
+    request.write('');
+    request.end();
   } catch (err) {
     console.error(err);
-    res.status(500).json();
+    res.status(500).json(err);
   }
-
-  // if (!books[id]) {
-  //   res.status(404).redirect('/404');
-  // }
-  // const book = JSON.stringify(books[id]);
-
-  // const request = http.request(
-  //   {
-  //     host: COUNTER_HOST,
-  //     port: COUNTER_PORT,
-  //     method: 'POST',
-  //     path: `/counter/${id}/incr`,
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Content-Length': book.length,
-  //     },
-  //   },
-  //   (response) => {
-  //     response
-  //       .on('data', (d) => {
-  //         const data = JSON.parse(d.toString());
-  //         updateBook(id, data);
-
-  //         res.render('books/view', {
-  //           title: 'Book view',
-  //           book: data,
-  //         });
-  //       })
-  //       .on('error', () => {
-  //         res.redirect('/404');
-  //       });
-  //   },
-  // );
-
-  // request.write(book);
-  // request.end();
-});
-
-router.post('/create', fileMiddleware.single('fileBook'), async (req, res) => {
-  const { file, body } = req;
-  // const { path, filename } = file;
-  // const { validateBook, createBook } = booksStore;
-
-  const book = new Book(body);
-
-  // const book = { ...body, fileName: filename, fileBook: path };
-  // const { valid, errors } = validateBook(book);
-
-  try {
-    await book.save();
-    res.status(200).redirect('/books');
-  } catch (err) {
-    console.error(err);
-    res.status(500).json();
-  }
-
-  // if (!valid) {
-  //   res.status(400).json({ message: 'Invalid data format', errors });
-  // } else {
-  //   createBook(book);
-  //   res.status(200).redirect('/books');
-  // }
 });
 
 router.post(
-  '/update/:id',
-  fileMiddleware.single('fileBook'),
+  '/create',
+  // TODO: rewrite using multer & save files into fs
+  fileMiddleware.fields([
+    { name: 'fileBook', maxCount: 1 },
+    { name: 'fileCover', maxCount: 1 },
+  ]),
   async (req, res) => {
-    const { file, body } = req;
+    const { files, body } = req;
+    // const { path, filename } = file;
+    // const { validateBook, createBook } = booksStore;
+    console.log(files);
+    const { fileBook, fileCover } = files;
+
+    const book = new Book({
+      ...body,
+      fileBook: fileBook[0].path,
+      fileCover: fileCover?.[0]?.path || '',
+    });
+
+    // const book = { ...body, fileName: filename, fileBook: path };
+    // const { valid, errors } = validateBook(book);
+
+    try {
+      await book.save();
+      res.status(200).redirect('/books');
+    } catch (err) {
+      console.error(err);
+      res.status(500).json(err);
+    }
+
+    // if (!valid) {
+    //   res.status(400).json({ message: 'Invalid data format', errors });
+    // } else {
+    //   createBook(book);
+    //   res.status(200).redirect('/books');
+    // }
+  },
+);
+
+router.post(
+  '/update/:id',
+  fileMiddleware.fields([
+    { name: 'fileBook', maxCount: 1 },
+    { name: 'fileCover', maxCount: 1 },
+  ]),
+  async (req, res) => {
+    const { fields, file, body } = req;
     const { id } = req.params;
+
+    console.log(fields, file);
 
     // const { path, filename } = file;
     // const { updateBook, validateBook, books } = booksStore;
@@ -170,12 +184,14 @@ router.post(
     // const book = { ...body, fileName: filename, fileBook: path, id };
     // const { valid, errors } = validateBook(book, true);
 
+    const book = { ...body };
+
     try {
-      await Book.findByIdAndUpdate(id, body);
+      await Book.findByIdAndUpdate(id, book);
       res.status(200).redirect('/books');
     } catch (err) {
       console.error(err);
-      res.status(500).json();
+      res.status(500).json(err);
     }
 
     // if (!valid) {
@@ -196,7 +212,7 @@ router.post('/delete/:id', async (req, res) => {
     res.status(204).redirect('/books');
   } catch (err) {
     console.error(err);
-    res.status(500).json();
+    res.status(500).json(err);
   }
 
   // if (!books[id]) {
@@ -207,24 +223,27 @@ router.post('/delete/:id', async (req, res) => {
   // }
 });
 
-router.get('/:id/download', (req, res) => {
+router.get('/:id/download', async (req, res) => {
   const { id } = req.params;
-  const { books } = booksStore;
 
-  const book = books[id];
-
-  if (!book) {
-    res.status(404).redirect('/404');
-  }
-
-  const { fileBook, fileName } = book;
-
-  res.download(path.join(__dirname, '..', fileBook), fileName, (err) => {
-    if (err) {
-      console.log(err);
+  try {
+    const book = await Book.findById(id).select('-__v');
+    if (!book) {
       res.status(404).redirect('/404');
     }
-  });
+
+    const { fileBook, fileName } = book;
+
+    res.download(path.join(__dirname, '..', fileBook), fileName, (err) => {
+      if (err) {
+        console.log(err);
+        res.status(404).redirect('/404');
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
 });
 
 module.exports = router;

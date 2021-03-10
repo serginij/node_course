@@ -7,6 +7,8 @@ services:
       - 3001:3001
     environment:
       - PORT=3001
+      - DB_PASS=lHU12aOpqX45eS7G
+      - DB_NAME=library
     command: npm start
     # networks:
     #   - local
@@ -20,7 +22,9 @@ services:
       - COUNTER_HOST=counter
       - DB_PASS=lHU12aOpqX45eS7G
       - DB_NAME=library
-    command: npm start
+    command: npm run dev
+    volumes:
+      - './src:/code/src'
     depends_on:
       - counter
     # networks:
