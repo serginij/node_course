@@ -1,4 +1,38 @@
-# Домашнее задание к занятию «2.3 Ejs»
+# Домашнее задание к занятию Mongo
+
+**Запросы для MongoDB**
+
+- запрос(ы) для вставки данных минимум о двух книгах в коллекцию books
+
+```ts
+let data = { title: 'test', description: 'test', authors: 'test' };
+db.library.insertMany([data, data]);
+```
+
+- запрос для поиска полей документов коллекции books по полю title
+
+```ts
+let search = 'test';
+db.library.find({ title: new RegExp(search) });
+```
+
+- запрос для редактирования полей: description и authors коллекции books по \_id записи
+
+```ts
+let data = { description: 'test', authors: 'test' };
+let id = 'id';
+db.library.updateOne({ _id: id }, { $set: { description, authors } });
+```
+
+\*Каждый документ коллекции books должен содержать следующую структуру данных:
+
+```ts
+{
+  title: string,
+  description: string,
+  authors: string
+}
+```
 
 ## Приложение доступну по адресу
 
