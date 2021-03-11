@@ -21,4 +21,4 @@ Here you can find my homeworks during learning Node.js (Express, Nest.js)
 - library
 
   Library App
-  https://serginij-express-library.herokuapp.com/
+https://github.com/serginij/node_course/tree/library
