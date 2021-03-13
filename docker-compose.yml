@@ -8,10 +8,9 @@ services:
     environment:
       - PORT=3001
       - DB_PASS=lHU12aOpqX45eS7G
-      - DB_NAME=library
+      - DB_NAME=counter
     command: npm start
-    # networks:
-    #   - local
+
   library:
     build: .
     ports:
@@ -22,13 +21,8 @@ services:
       - COUNTER_HOST=counter
       - DB_PASS=lHU12aOpqX45eS7G
       - DB_NAME=library
-    command: npm run dev
+    command: npm start
     volumes:
-      - './src:/code/src'
+      - ./public:/code/public
     depends_on:
       - counter
-    # networks:
-    #   - local
-# networks:
-#   local:
-#     driver: bridge
