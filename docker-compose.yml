@@ -5,22 +5,15 @@ services:
     build: ./services/counter
     ports:
       - 3001:3001
-    environment:
-      - PORT=3001
-      - DB_PASS=lHU12aOpqX45eS7G
-      - DB_NAME=counter
+    env_file:
+      - counter.env
     command: npm start
-
   library:
     build: .
     ports:
       - 3000:3000
-    environment:
-      - PORT=3000
-      - COUNTER_PORT=3001
-      - COUNTER_HOST=counter
-      - DB_PASS=lHU12aOpqX45eS7G
-      - DB_NAME=library
+    env_file:
+      - library.env
     command: npm start
     volumes:
       - ./public:/code/public
