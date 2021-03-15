@@ -12,7 +12,7 @@
                     <p class="card-text"><%= book.views %> views</p>
                 </div>
                 <b class='card-label'>ID</b>
-                <p class="card-text"><%= book.id %></p>
+                <p class="card-text"><%= book._id %></p>
                 <b class='card-label'>Description</b>
                 <p class="card-text"><%= book.description %></p>
                 <b class='card-label'>Authors</b>
@@ -27,15 +27,15 @@
                 <p class="card-text"><%= book.fileBook %></p>
 
                 <div class="text-right">
-                    <a class="btn btn-sm btn-primary" href="/books/update/<%= book.id %>">
+                    <a class="btn btn-sm btn-primary" href="/books/update/<%= book._id %>">
                         <i class="fa fa-pencil" aria-hidden="true"></i>
                     </a>
-                    <form action="/books/<%= book.id %>/download" method="GET" class="d-inline">
+                    <form action="/books/<%= book._id %>/download" method="GET" class="d-inline">
                         <button class="btn btn-sm btn-success">
                             <i class="fa fa-download" aria-hidden="true"></i>
                         </button>
                     </form>
-                    <form action="/books/delete/<%= book.id %>" method="POST" class="d-inline">
+                    <form action="/books/delete/<%= book._id %>" method="POST" class="d-inline">
                         <button class="btn btn-sm btn-danger">
                             <i class="fa fa-trash" aria-hidden="true"></i>
                         </button>

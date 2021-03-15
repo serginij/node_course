@@ -5,24 +5,17 @@ services:
     build: ./services/counter
     ports:
       - 3001:3001
-    environment:
-      - PORT=3001
+    env_file:
+      - counter.env
     command: npm start
-    networks:
-      - local
   library:
     build: .
     ports:
       - 3000:3000
-    environment:
-      - PORT=3000
-      - COUNTER_PORT=3001
-      - COUNTER_HOST=counter
+    env_file:
+      - library.env
     command: npm start
+    volumes:
+      - ./public:/code/public
     depends_on:
       - counter
-    networks:
-      - local
-networks:
-  local:
-    driver: bridge

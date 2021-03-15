@@ -1,6 +1,6 @@
 <form method="POST" class="mt-5" id='form'>
   <div class="form-group">
-      <label for="inputTitle">Title</label>
+      <label for="inputTitle">Title *</label>
       <input 
         type="text"
         required
@@ -13,7 +13,6 @@
   <div class="form-group">
       <label for="inputDesc">Description</label>
       <textarea
-        required
         rows="3"
         name="description"
         class="form-control"
@@ -22,7 +21,7 @@
   </div>
 
   <div class="form-group">
-      <label for="inputAuthors">Authors</label>
+      <label for="inputAuthors">Authors *</label>
       <input 
         type="text" 
         required
@@ -32,34 +31,34 @@
         id="inputAuthors">
   </div>
 
-  <div class="form-group">
-      <label for="inputFavorite">Favorite</label>
+  <div class="d-flex align-items-center" style="margin-bottom: 5px;">
+      <label style="margin: 0 12px 0 0;" for="inputFavorite">Favorite</label>
       <input 
-        type="text" 
-        required
-        value="<%= book.favorite %>"
+        type="checkbox"
         name="favorite"
-        class="form-control"
+        class="flex-shrink-1"
         id="inputFavorite">
   </div>
 
   <div class="form-group">
-      <label for="inputFileCover">Book cover</label>
-      <input 
-        type="text" 
-        required
-        value="<%= book.fileCover %>"
-        name="fileCover"
-        class="form-control"
-        id="inputFileCover">             
+    <label>Book cover</label>
+    <label><%= book.isNew ? '' : `(Current: ${book.fileCover})` %></label>
+    <div class="custom-file">        
+        <input 
+          type="file" 
+          name="fileCover"
+          accept="image/png, image/jpeg"
+          class="form-control-file"            
+          id="inputFileCover">
+    </div>
   </div>
 
   <div class="form-group">
-      <label>Book file</label>
+      <label>Book file <%= book.isNew ? '*' : '' %></label>
+      <label><%= book.isNew ? '' : `(Current: ${book.fileBook})` %></label>
       <div class="custom-file">        
           <input 
             type="file" 
-            required
             name="fileBook"
             accept="text/plain, application/pdf"
             class="form-control-file"            
@@ -72,6 +71,7 @@
   </div>
 </form>
 <script>
+
   form.onsubmit = async e => {
     e.preventDefault()
     const res = await fetch(``, {
@@ -83,4 +83,12 @@
       location.replace('/books')
     }
   }
+
+  const isNew = <%= book.isNew || false %>;
+  
+  if(isNew && document.getElementById('inputBookFile')) {
+    document.getElementById('inputBookFile').required = true
+  }
+
+  inputFavorite.checked = <%= !!book.favorite %>;
 </script>

@@ -3,59 +3,54 @@ const path = require('path');
 const http = require('http');
 
 const { fileMiddleware } = require('../middleware');
-const { booksStore } = require('../store');
+const { Book } = require('../models');
 
 const router = express.Router();
 
 const COUNTER_PORT = process.env.COUNTER_PORT || 3001;
 const COUNTER_HOST = process.env.COUNTER_HOST || 'localhost';
 
-router.get('/', (req, res) => {
-  const { getBooks, setBooks } = booksStore;
-  const books = getBooks();
+router.get('/', async (req, res) => {
+  const books = await Book.find().select('-__v').lean();
 
-  if (books.length === 0) {
-    http.get(
-      {
-        host: COUNTER_HOST,
-        port: COUNTER_PORT,
-        path: `/counter`,
-      },
-      (response) => {
-        response
-          .on('data', (d) => {
-            const data = JSON.parse(d.toString());
-            setBooks(data);
+  http.get(
+    {
+      host: COUNTER_HOST,
+      port: COUNTER_PORT,
+      path: `/counter`,
+    },
+    (response) => {
+      response
+        .on('end', (d) => {
+          const viewsById = JSON.parse(d.toString());
 
-            res.render('books/list', {
-              title: 'Books list',
-              books: Object.values(data),
-            });
-          })
-          .on('error', () => {
-            res.redirect('/404');
+          const formatted = books.map((book) => ({
+            ...book,
+            views: viewsById[book._id] || 0,
+          }));
+
+          res.render('books/list', {
+            title: 'Books list',
+            books: formatted,
           });
-      },
-    );
-  } else {
-    res.render('books/list', {
-      title: 'Books list',
-      books,
-    });
-  }
+        })
+        .on('error', () => {
+          res.redirect('/404');
+        });
+    },
+  );
 });
 
 router.get('/create', (req, res) => {
   res.render('books/create', {
     title: 'Book create',
-    book: {},
+    book: { isNew: true },
   });
 });
 
-router.get('/update/:id', (req, res) => {
+router.get('/update/:id', async (req, res) => {
   const { id } = req.params;
-  const { books } = booksStore;
-  const book = books[id];
+  const book = await Book.findById(id).select('-__v').lean();
 
   if (!book) {
     res.status(404).redirect('/404');
@@ -67,115 +62,139 @@ router.get('/update/:id', (req, res) => {
   });
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  const { books, updateBook } = booksStore;
+  try {
+    const book = await Book.findById(id).select('-__v').lean();
 
-  if (!books[id]) {
-    res.status(404).redirect('/404');
-  }
-  const book = JSON.stringify(books[id]);
-
-  const request = http.request(
-    {
-      host: COUNTER_HOST,
-      port: COUNTER_PORT,
-      method: 'POST',
-      path: `/counter/${id}/incr`,
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': book.length,
+    const request = http.request(
+      {
+        host: COUNTER_HOST,
+        port: COUNTER_PORT,
+        method: 'POST',
+        path: `/counter/${id}/incr`,
       },
-    },
-    (response) => {
-      response
-        .on('data', (d) => {
-          const data = JSON.parse(d.toString());
-          updateBook(id, data);
+      (response) => {
+        response
+          .on('end', (d) => {
+            const { views } = JSON.parse(d.toString());
 
-          res.render('books/view', {
-            title: 'Book view',
-            book: data,
+            res.render('books/view', {
+              title: 'Book view',
+              book: { ...book, views },
+            });
+          })
+          .on('error', () => {
+            res.redirect('/books');
           });
-        })
-        .on('error', () => {
-          res.redirect('/404');
-        });
-    },
-  );
+      },
+    );
 
-  request.write(book);
-  request.end();
-});
-
-router.post('/create', fileMiddleware.single('fileBook'), (req, res) => {
-  const { file, body } = req;
-  const { path, filename } = file;
-  const { validateBook, createBook } = booksStore;
-
-  const book = { ...body, fileName: filename, fileBook: path };
-  const { valid, errors } = validateBook(book);
-
-  if (!valid) {
-    res.status(400).json({ message: 'Invalid data format', errors });
-  } else {
-    createBook(book);
-    res.status(200).redirect('/books');
+    request.write('');
+    request.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
   }
 });
 
-router.post('/update/:id', fileMiddleware.single('fileBook'), (req, res) => {
-  const { file, body } = req;
+router.post(
+  '/create',
+  fileMiddleware.fields([
+    { name: 'fileBook', maxCount: 1 },
+    { name: 'fileCover', maxCount: 1 },
+  ]),
+  async (req, res) => {
+    const { files, body } = req;
+    const { fileBook, fileCover } = files;
+
+    try {
+      const book = new Book({
+        ...body,
+        fileBook: fileBook[0].path,
+        fileCover: fileCover?.[0]?.path || '',
+        favorite: body.favorite === 'on',
+      });
+
+      await book.save();
+      res.status(200).redirect('/books');
+    } catch (err) {
+      console.error(err);
+      res.status(500).json(err);
+    }
+  },
+);
+
+router.post(
+  '/update/:id',
+  fileMiddleware.fields([
+    { name: 'fileBook', maxCount: 1 },
+    { name: 'fileCover', maxCount: 1 },
+  ]),
+  async (req, res) => {
+    const { files, params, body } = req;
+    const { id } = params;
+    try {
+      const { fileBook, fileCover, favorite, ...data } = body;
+
+      const bookFile = {};
+      const cover = {};
+
+      if (files) {
+        const { fileBook, fileCover } = files;
+
+        if (fileBook?.[0]) bookFile.fileBook = fileBook[0].path;
+        if (fileCover?.[0]) cover.fileCover = fileCover[0].path;
+      }
+
+      const book = {
+        ...data,
+        ...bookFile,
+        ...cover,
+        favorite: favorite === 'on',
+      };
+
+      await Book.findByIdAndUpdate(id, book);
+      res.status(200).redirect('/books');
+    } catch (err) {
+      console.error(err);
+      res.status(500).json(err);
+    }
+  },
+);
+
+router.post('/delete/:id', async (req, res) => {
   const { id } = req.params;
 
-  const { path, filename } = file;
-  const { updateBook, validateBook, books } = booksStore;
-
-  if (!books[id]) {
-    res.status(404).redirect('/404');
-  }
-
-  const book = { ...body, fileName: filename, fileBook: path, id };
-  const { valid, errors } = validateBook(book, true);
-
-  if (!valid) {
-    res.status(400).json({ message: 'Invalid data format', errors });
-  } else {
-    updateBook(id, book);
-    res.status(200).redirect('/books');
+  try {
+    await Book.findByIdAndDelete(id);
+    res.status(204).redirect('/books');
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
   }
 });
 
-router.post('/delete/:id', (req, res) => {
+router.get('/:id/download', async (req, res) => {
   const { id } = req.params;
-  const { books, deleteBook } = booksStore;
 
-  if (!books[id]) {
-    res.status(404).redirect('/404');
-  } else {
-    deleteBook(id);
-    res.status(200).redirect('/books');
-  }
-});
-
-router.get('/:id/download', (req, res) => {
-  const { id } = req.params;
-  const { books } = booksStore;
-
-  const book = books[id];
-
-  if (!book) {
-    res.status(404).redirect('/404');
-  }
-
-  const { fileBook, fileName } = book;
-
-  res.download(path.join(__dirname, '..', fileBook), fileName, (err) => {
-    if (err) {
-      console.log(err);
+  try {
+    const book = await Book.findById(id).select('fileBook fileName').lean();
+    if (!book) {
       res.status(404).redirect('/404');
     }
-  });
+    const { fileBook } = book;
+
+    res.download(path.join(__dirname, '..', fileBook), (err) => {
+      if (err) {
+        console.error(err);
+        res.status(404).redirect('/404');
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
 });
 
 module.exports = router;
