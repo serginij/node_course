@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
     },
     (response) => {
       response
-        .on('data', (d) => {
+        .on('end', (d) => {
           const viewsById = JSON.parse(d.toString());
 
           const formatted = books.map((book) => ({
@@ -76,7 +76,7 @@ router.get('/:id', async (req, res) => {
       },
       (response) => {
         response
-          .on('data', (d) => {
+          .on('end', (d) => {
             const { views } = JSON.parse(d.toString());
 
             res.render('books/view', {
