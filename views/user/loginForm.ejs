@@ -1,0 +1,43 @@
+<form class='mt-5' id='loginForm'>
+  <div>
+      <label>Username</label>
+      <input type="text" name="username" required /><br />
+  </div>
+  <div>
+      <label>Password</label>
+      <input type="password" name="password" required />
+  </div>
+  <%if (isLogin) { %>
+    <div>
+      <label>Display name</label>
+      <input type="text" name="displayName" required />
+    </div>
+    <div>
+      <label>Email</label>
+      <input type="email" name="email" required />
+    </div>
+  <% } %>
+  <%if (error) { %>
+    <p>Login or password is incorrect</p>
+  <% } %>
+  <div>
+      <input type="submit" value="Submit" id='login-btn' />
+  </div>
+</form>
+<script>
+  const isLogin = <% isLogin || false %>;
+  
+  document.getElementById('login-btn').innerText = isLogin ? 'Log in' : "Sign up"
+
+  loginForm.onsubmit = async e => {
+    e.preventDefault()
+    const res = await fetch('', {
+      method: 'POST',
+      body: loginForm
+    })
+
+    if([200, 201].includes(res.status)) {
+      location.replace(`/me`)
+    }
+  }
+</script>

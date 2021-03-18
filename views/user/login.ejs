@@ -1,0 +1,10 @@
+<%- include("../partial/layout-start", {title: "Log in"}) %>
+
+<div class="row">
+    <div class="col-sm-6">
+        <%- include("loginForm", {isLogin: true}) %>
+        <button><a href="/signup">Sign up</a></button>
+    </div>
+</div>
+
+<%- include("../partial/layout-end") %>

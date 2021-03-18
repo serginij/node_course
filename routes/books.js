@@ -13,17 +13,18 @@ const COUNTER_HOST = process.env.COUNTER_HOST || 'localhost';
 router.get('/', async (req, res) => {
   const books = await Book.find().select('-__v').lean();
 
-  http.get(
+  const request = http.request(
     {
       host: COUNTER_HOST,
       port: COUNTER_PORT,
       path: `/counter`,
     },
     (response) => {
+      let data = '';
+      response.on('data', (chunk) => (data += chunk));
       response
-        .on('end', (d) => {
-          const viewsById = JSON.parse(d.toString());
-
+        .on('end', () => {
+          const viewsById = JSON.parse(data);
           const formatted = books.map((book) => ({
             ...book,
             views: viewsById[book._id] || 0,
@@ -39,6 +40,8 @@ router.get('/', async (req, res) => {
         });
     },
   );
+
+  request.end();
 });
 
 router.get('/create', (req, res) => {
@@ -75,9 +78,11 @@ router.get('/:id', async (req, res) => {
         path: `/counter/${id}/incr`,
       },
       (response) => {
+        let data = '';
+        response.on('data', (chunk) => (data += chunk));
         response
-          .on('end', (d) => {
-            const { views } = JSON.parse(d.toString());
+          .on('end', () => {
+            const { views } = JSON.parse(data);
 
             res.render('books/view', {
               title: 'Book view',
@@ -90,7 +95,6 @@ router.get('/:id', async (req, res) => {
       },
     );
 
-    request.write('');
     request.end();
   } catch (err) {
     console.error(err);
@@ -135,6 +139,7 @@ router.post(
     const { files, params, body } = req;
     const { id } = params;
     try {
+      // eslint-disable-next-line no-unused-vars
       const { fileBook, fileCover, favorite, ...data } = body;
 
       const bookFile = {};

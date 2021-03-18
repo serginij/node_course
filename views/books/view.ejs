@@ -1,6 +1,4 @@
 <%- include("../partial/layout-start", {title: title}) %>
-<%- include("../partial/menu") %>
-<h1><%= title %></h1>
 
 <div class="row">
     <div class="col-sm-8">
@@ -13,16 +11,22 @@
                 </div>
                 <b class='card-label'>ID</b>
                 <p class="card-text"><%= book._id %></p>
+
                 <b class='card-label'>Description</b>
                 <p class="card-text"><%= book.description %></p>
+
                 <b class='card-label'>Authors</b>
                 <p class="card-text"><%= book.authors %></p>
+
                 <b class='card-label'>Favorite</b>
                 <p class="card-text"><%= book.favorite %></p>
+
                 <b class='card-label'>File cover</b>
                 <p class="card-text"><%= book.fileCover %></p>
+
                 <b class='card-label'>File name</b>
                 <p class="card-text"><%= book.fileName %></p>
+
                 <b class='card-label'>Book file</b>
                 <p class="card-text"><%= book.fileBook %></p>
 
