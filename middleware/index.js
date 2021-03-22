@@ -1,9 +1,9 @@
 const notFoundMiddleware = require('./notFound');
 const fileMiddleware = require('./file');
-const verifyUserMiddleware = require('./verifyUser');
+const authMiddleware = require('./auth');
 
 module.exports = {
   notFoundMiddleware,
   fileMiddleware,
-  verifyUserMiddleware,
+  authMiddleware,
 };

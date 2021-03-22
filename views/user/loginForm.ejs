@@ -1,4 +1,4 @@
-<form class='mt-5' id='loginForm'>
+<form method="POST" class='mt-5' id='loginForm'>
   <div>
       <label>Username</label>
       <input type="text" name="username" required /><br />
@@ -7,19 +7,17 @@
       <label>Password</label>
       <input type="password" name="password" required />
   </div>
-  <%if (isLogin) { %>
+  <%if (!isLogin) { %>
     <div>
       <label>Display name</label>
       <input type="text" name="displayName" required />
     </div>
     <div>
       <label>Email</label>
-      <input type="email" name="email" required />
+      <input type="email" name="email" />
     </div>
   <% } %>
-  <%if (error) { %>
-    <p>Login or password is incorrect</p>
-  <% } %>
+  <p id='error' class='text-danger'>Login or password is incorrect</p>
   <div>
       <input type="submit" value="Submit" id='login-btn' />
   </div>
@@ -27,7 +25,8 @@
 <script>
   const isLogin = <% isLogin || false %>;
   
-  document.getElementById('login-btn').innerText = isLogin ? 'Log in' : "Sign up"
+  document.getElementById('login-btn').innerText = isLogin ? 'Log in' : "Sign up";
+  document.getElementById('error').style.display = 'none';
 
   loginForm.onsubmit = async e => {
     e.preventDefault()
@@ -38,6 +37,8 @@
 
     if([200, 201].includes(res.status)) {
       location.replace(`/me`)
+    } else {
+      document.getElementById('error').style.display = 'block';
     }
   }
 </script>
