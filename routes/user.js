@@ -30,7 +30,7 @@ router.post('/signup', async (req, res) => {
     console.log(req.body, { encryptedPassword });
     const user = new User({ ...userData, password: encryptedPassword });
     await user.save();
-    res.redirect('/login');
+    res.redirect('/user/login');
   } catch (err) {
     res.status(500).json({ message: 'something went wrong' });
   }
@@ -47,7 +47,7 @@ router.post(
   }),
   (req, res) => {
     console.log('req.user: ', req.user);
-    res.redirect('/me');
+    res.redirect('/user/me');
   },
 );
 

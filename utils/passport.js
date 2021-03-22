@@ -11,7 +11,7 @@ const { decryptPassword } = require('./bcrypt');
  */
 const verifyUser = async (username, pwd, done) => {
   try {
-    const user = await User.findOne({ username }).select('-__v');
+    const user = await User.findOne({ username }).select('-__v').lean();
 
     if (!user) {
       return done(null, false);
@@ -46,7 +46,7 @@ passport.serializeUser(function (user, cb) {
 
 passport.deserializeUser(async (id, cb) => {
   try {
-    const user = await User.findById(id).select('-__v');
+    const user = await User.findById(id).select('-__v').lean();
     console.log('dbUser', user);
     cb(null, user);
   } catch (err) {

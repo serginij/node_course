@@ -35,9 +35,7 @@
       body: loginForm
     })
 
-    if([200, 201].includes(res.status)) {
-      location.replace(`/me`)
-    } else {
+    if(![200, 201].includes(res.status)) {
       document.getElementById('error').style.display = 'block';
     }
   }
