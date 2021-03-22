@@ -16,10 +16,7 @@ const verifyUser = async (username, pwd, done) => {
     if (!user) {
       return done(null, false);
     }
-
     const { password, ...userData } = user;
-
-    console.log('verifyUser', user);
 
     if (!(await decryptPassword(password, pwd))) {
       return done(null, false);
@@ -40,14 +37,12 @@ const passportOptions = {
 passport.use('local', new LocalStrategy(passportOptions, verifyUser));
 
 passport.serializeUser(function (user, cb) {
-  console.log({ user });
   cb(null, user._id);
 });
 
 passport.deserializeUser(async (id, cb) => {
   try {
     const user = await User.findById(id).select('-__v').lean();
-    console.log('dbUser', user);
     cb(null, user);
   } catch (err) {
     return cb(err);

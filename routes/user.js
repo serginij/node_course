@@ -18,27 +18,19 @@ router.get('/me', (req, res) => {
   res.render('user/profile', { user: req.user });
 });
 
-// router.post('/login', (req, res) => {
-//   res.status(200).json({ user: 'test' });
-// });
-
 router.post('/signup', async (req, res) => {
   try {
     const { password, ...userData } = req.body;
-    console.log(encryptPassword);
     const encryptedPassword = await encryptPassword(password);
-    console.log(req.body, { encryptedPassword });
+
     const user = new User({ ...userData, password: encryptedPassword });
     await user.save();
+
     res.redirect('/user/login');
   } catch (err) {
     res.status(500).json({ message: 'something went wrong' });
   }
 });
-
-// router.get('/logout', (req, res) => {
-//   res.status(200).json({ ok: true });
-// });
 
 router.post(
   '/login',
@@ -46,7 +38,6 @@ router.post(
     failureRedirect: '/user/login',
   }),
   (req, res) => {
-    console.log('req.user: ', req.user);
     res.redirect('/user/me');
   },
 );
@@ -56,20 +47,8 @@ router.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-router.get(
-  '/profile',
-  // (req, res, next) => {
-  //   if (!req.isAuthenticated || !req.isAuthenticated()) {
-  //     if (req.session) {
-  //       req.session.returnTo = req.originalUrl || req.url;
-  //     }
-  //     return res.redirect('/login');
-  //   }
-  //   next();
-  // },
-  (req, res) => {
-    res.render('profile', { user: req.user });
-  },
-);
+router.get('/profile', (req, res) => {
+  res.render('profile', { user: req.user });
+});
 
 module.exports = router;
