@@ -12,10 +12,10 @@
 
           <b class='card-label'>Name</b>
           <p class="card-text"><%= user.displayName %></p>
-
-          <b class='card-label'>Email</b>
-          <p class="card-text"><%= user.email %></p>
-
+          <%if (user.email) { %>
+            <b class='card-label'>Email</b>
+            <p class="card-text"><%= user.email %></p>
+          <% } %>
           <a href="/user/logout" method='POST'>Log out</a>
       </div>
     </div>
