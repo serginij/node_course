@@ -38,7 +38,7 @@ router.post(
     failureRedirect: '/user/login',
   }),
   (req, res) => {
-    res.redirect('/user/me');
+    res.redirect(req.session.returnTo || '/user/me');
   },
 );
 
