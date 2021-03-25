@@ -1,0 +1,25 @@
+<%- include("../partial/layout-start", {title: "Profile"}) %>
+
+<div class="row">
+  <div class="col-sm-8">
+      <div class="card">
+        <div class="card-body">
+          <b class='card-label'>ID</b>
+          <p class="card-text"><%= user._id %></p>
+
+          <b class='card-label'>Username</b>
+          <p class="card-text"><%= user.username %></p>
+
+          <b class='card-label'>Name</b>
+          <p class="card-text"><%= user.displayName %></p>
+          <%if (user.email) { %>
+            <b class='card-label'>Email</b>
+            <p class="card-text"><%= user.email %></p>
+          <% } %>
+          <a href="/user/logout" method='POST'>Log out</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include("../partial/layout-end") %>
