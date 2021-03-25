@@ -69,6 +69,7 @@ router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const book = await Book.findById(id).select('-__v').lean();
+    const { displayName } = req.user;
 
     const request = http.request(
       {
@@ -87,6 +88,7 @@ router.get('/:id', async (req, res) => {
             res.render('books/view', {
               title: 'Book view',
               book: { ...book, views },
+              displayName,
             });
           })
           .on('error', () => {
