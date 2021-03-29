@@ -1,10 +1,9 @@
-<%- include("../partial/layout-start", {title: title}) %>
+<%- include("../partial/layout-start", {title: title, socket: true}) %>
 
 <div class="row">
     <div class="col-sm-8">
         <div class="card">
             <div class="card-body">
-
                 <div class='d-flex justify-content-between'>
                     <h5 class="card-title"><%= book.title %></h5>
                     <p class="card-text"><%= book.views %> views</p>
@@ -50,5 +49,7 @@
         </div>
     </div>
 </div>
+
+<%- include("./chat", {chat: {message: "", _id: book._id, user: displayName}}) %>
 
 <%- include("../partial/layout-end") %>
