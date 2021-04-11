@@ -9,4 +9,4 @@ const bookSchema = new Schema({
   fileBook: { type: String, required: true },
 });
 
-module.exports = model('Book', bookSchema);
+export const Book = model('Book', bookSchema);

@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+      "module": "system",
+      "declaration": true,
+      "removeComments": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "allowSyntheticDefaultImports": true,
+      "target": "es2020",
+      "sourceMap": true,
+      "outFile": "./src/index.js",
+      "rootDir": "./src",
+      "strict": true,
+      "incremental": true,
+      "esModuleInterop": true,
+      "strictNullChecks": true,
+      "moduleResolution": "node"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
+}
