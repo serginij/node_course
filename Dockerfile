@@ -1,12 +1,11 @@
 FROM node:alpine
 
-WORKDIR /code
+WORKDIR /
 
-COPY package*.json ./
-COPY tsconfig.json ./
+COPY . .
 RUN npm install && npm install tsc -g
 RUN npm run build
-COPY . .
+COPY src src
 
 EXPOSE 3000
 

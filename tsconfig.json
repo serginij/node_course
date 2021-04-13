@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-      "module": "system",
+      "module": "commonjs",
       "declaration": true,
       "removeComments": true,
       "emitDecoratorMetadata": true,
@@ -8,14 +8,13 @@
       "allowSyntheticDefaultImports": true,
       "target": "es2020",
       "sourceMap": true,
-      "outFile": "./src/index.js",
-      "rootDir": "./src",
+      "outDir": "./build",
+      "baseUrl": "./src",
       "strict": true,
       "incremental": true,
       "esModuleInterop": true,
       "strictNullChecks": true,
-      "moduleResolution": "node"
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
+  "include": ["src/*.ts"],
+  "exclude": ["node_modules", "**/*spec.ts"]
 }

@@ -14,8 +14,8 @@ services:
       - 3000:3000
     env_file:
       - library.env
-    command: npm start
+    command: npm run start:docker
     volumes:
-      - ./public:/code/public
+      - ./public:/public
     depends_on:
       - counter

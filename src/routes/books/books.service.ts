@@ -48,11 +48,11 @@ export const renderBookById = async (req: Request, res: Response) => {
   });
 };
 
-export const getBook = async (req: IUserRequest, res: Response) => {
+export const getBook = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const book = await getBookById(id);
-    const { displayName } = req.user;
+    const { displayName } = (req as IUserRequest).user;
 
     if (book) {
       res.render('books/view', {
@@ -69,8 +69,8 @@ export const getBook = async (req: IUserRequest, res: Response) => {
   }
 };
 
-export const createBook = async (req: IMulterRequest, res: Response) => {
-  const { files, body } = req;
+export const createBook = async (req: Request, res: Response) => {
+  const { files, body } = req as IMulterRequest;
   const { fileBook, fileCover } = files;
 
   try {
@@ -92,8 +92,8 @@ export const createBook = async (req: IMulterRequest, res: Response) => {
   }
 };
 
-export const updateBook = async (req: IMulterRequest, res: Response) => {
-  const { files, params, body } = req;
+export const updateBook = async (req: Request, res: Response) => {
+  const { files, params, body } = req as IMulterRequest;
   const { id } = params;
   try {
     // eslint-disable-next-line no-unused-vars

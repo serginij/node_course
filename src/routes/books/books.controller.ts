@@ -9,9 +9,9 @@ import {
   updateBook,
 } from './books.service';
 
-const express = require('express');
+import express from 'express';
 
-const { fileMiddleware } = require('../../middleware');
+import { fileMiddleware } from '../../middleware';
 
 const router = express.Router();
 
@@ -45,4 +45,4 @@ router.post('/delete/:id', deleteBook);
 
 router.get('/:id/download', dowloadBook);
 
-module.exports = router;
+export const booksRouter = router;

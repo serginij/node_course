@@ -28,6 +28,11 @@ export interface IUser {
 
 export interface IUserRequest extends Request {
   user: IUser;
+  session: {
+    returnTo?: string;
+  };
+  logout: () => void;
+  isAuthenticated?: () => boolean;
 }
 
 export interface IMulterRequest extends Request {
