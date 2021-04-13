@@ -1,9 +1,10 @@
 import express from 'express';
+import passport from 'passport';
+
 import { IUserRequest } from '../types';
-const passport = require('passport');
 
 import { User } from '../models';
-const { encryptPassword } = require('../utils');
+import { encryptPassword } from '../utils';
 
 const router = express.Router();
 

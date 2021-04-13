@@ -1,15 +1,14 @@
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
 
-const { User } = require('../models');
-const { decryptPassword } = require('./bcrypt');
+import { User } from '../models';
+import { decryptPassword } from './bcrypt';
 
-/**
- * @param {String} username
- * @param {String} password
- * @param {Function} done
- */
-const verifyUser = async (username, pwd, done) => {
+const verifyUser = async (
+  username: string,
+  pwd: string,
+  done: (...args: any) => void,
+) => {
   try {
     const user = await User.findOne({ username }).select('-__v').lean();
 
@@ -34,10 +33,10 @@ const passportOptions = {
   passReqToCallback: false,
 };
 
-passport.use('local', new LocalStrategy(passportOptions, verifyUser));
+passport.use('local', new LocalStrategy(passportOptions as any, verifyUser));
 
 passport.serializeUser(function (user, cb) {
-  cb(null, user._id);
+  cb(null, (user as any)._id);
 });
 
 passport.deserializeUser(async (id, cb) => {
@@ -48,3 +47,5 @@ passport.deserializeUser(async (id, cb) => {
     return cb(err);
   }
 });
+
+export default passport;

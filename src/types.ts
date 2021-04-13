@@ -32,7 +32,6 @@ export interface IUserRequest extends Request {
     returnTo?: string;
   };
   logout: () => void;
-  isAuthenticated?: () => boolean;
 }
 
 export interface IMulterRequest extends Request {

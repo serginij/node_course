@@ -1,10 +1,10 @@
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const passport = require('passport');
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import passport from 'passport';
 
 import { booksRouter, userRouter, mainRouter, chatRouter } from './routes';
-const { notFoundMiddleware, authMiddleware } = require('./middleware');
-const { connectToDb, app, httpServer } = require('./utils');
+import { notFoundMiddleware, authMiddleware } from './middleware';
+import { connectToDb, app, httpServer } from './utils';
 
 const PORT = process.env.PORT || 3000;
 
@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.set('view engine', 'ejs');
 
-app.use(authMiddleware);
+app.use(authMiddleware as any);
 
 app.use('/books', booksRouter);
 app.use('/user', userRouter);
@@ -35,7 +35,7 @@ const start = async () => {
   try {
     await connectToDb();
 
-    httpServer.listen(PORT, '0.0.0.0', () =>
+    httpServer.listen(PORT, '0.0.0.0' as any, () =>
       console.log(`App available on http://localhost:${PORT}`),
     );
   } catch (err) {
