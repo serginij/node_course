@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+      "module": "commonjs",
+      "declaration": true,
+      "removeComments": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "allowSyntheticDefaultImports": true,
+      "target": "es2020",
+      "sourceMap": true,
+      "outDir": "./build",
+      "baseUrl": "./src",
+      "strict": true,
+      "incremental": true,
+      "esModuleInterop": true,
+      "strictNullChecks": true,
+  },
+  "include": ["src/*.ts"],
+  "exclude": ["node_modules", "**/*spec.ts"]
+}

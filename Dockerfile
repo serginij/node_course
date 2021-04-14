@@ -1,11 +1,12 @@
 FROM node:alpine
 
-WORKDIR /code
+WORKDIR /
 
-COPY package*.json ./
-RUN npm install
 COPY . .
+RUN npm install && npm install tsc -g
+RUN npm run build
+COPY src src
 
 EXPOSE 3000
 
-CMD [ "npm", "start" ]
+CMD [ "npm", "run", "start:docker" ]
