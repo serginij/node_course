@@ -1,4 +1,6 @@
 import axios from 'axios';
+import 'reflect-metadata';
+import { injectable } from 'inversify';
 
 import { IBook } from '../../types';
 import { Book } from './books.model';
@@ -14,6 +16,7 @@ export interface IBookModule {
   deleteBook: (id: string) => Promise<boolean>;
 }
 
+@injectable()
 export class BookModule implements IBookModule {
   createBook = async (book: IBook) => {
     try {
