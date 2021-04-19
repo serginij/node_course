@@ -35,6 +35,12 @@ export interface IUserRequest extends Request {
   logout: () => void;
 }
 
+export interface IMessage {
+  type: string;
+  text: string;
+  username: string;
+}
+
 export interface IMulterRequest extends Request {
   files: Record<string, Express.Multer.File[]>;
 }

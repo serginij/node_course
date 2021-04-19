@@ -1,11 +1,11 @@
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import passport from 'passport';
+import path from 'path';
 
 import { booksRouter, userRouter, mainRouter, chatRouter } from './routes';
 import { notFoundMiddleware, authMiddleware } from './middleware';
 import { connectToDb, app, httpServer } from './utils';
-import path from 'path';
 
 const PORT = process.env.PORT || 3000;
 
