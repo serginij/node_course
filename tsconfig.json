@@ -9,7 +9,7 @@
       "target": "es2020",
       "sourceMap": true,
       "outDir": "./build",
-      "baseUrl": "./src",
+      "rootDir": "./src",
       "strict": true,
       "incremental": true,
       "esModuleInterop": true,

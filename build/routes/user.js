@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userRouter = void 0;
 const express_1 = __importDefault(require("express"));
-const passport = require('passport');
+const passport_1 = __importDefault(require("passport"));
 const models_1 = require("../models");
-const { encryptPassword } = require('../utils');
+const utils_1 = require("../utils");
 const router = express_1.default.Router();
 router.get('/login', (req, res) => {
     res.render('user/login');
@@ -21,7 +21,7 @@ router.get('/me', (req, res) => {
 router.post('/signup', async (req, res) => {
     try {
         const { password, ...userData } = req.body;
-        const encryptedPassword = await encryptPassword(password);
+        const encryptedPassword = await utils_1.encryptPassword(password);
         const user = new models_1.User({ ...userData, password: encryptedPassword });
         await user.save();
         res.redirect('/user/login');
@@ -30,7 +30,7 @@ router.post('/signup', async (req, res) => {
         res.status(500).json({ message: 'something went wrong' });
     }
 });
-router.post('/login', passport.authenticate('local', {
+router.post('/login', passport_1.default.authenticate('local', {
     failureRedirect: '/user/login',
 }), (req, res) => {
     res.redirect(req.session.returnTo || '/user/me');

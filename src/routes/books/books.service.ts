@@ -1,10 +1,11 @@
 import path from 'path';
 import { Request, Response } from 'express';
 
-import { BookModule } from '../../models/books';
 import { IMulterRequest, IUserRequest } from '../../types';
+import { BookModule } from '../../models';
+import { container } from '../../utils';
 
-const Book = new BookModule();
+const Book = container.get(BookModule);
 
 const {
   getBooks,
