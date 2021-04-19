@@ -37,3 +37,7 @@ export interface IUserRequest extends Request {
 export interface IMulterRequest extends Request {
   files: Record<string, Express.Multer.File[]>;
 }
+
+export enum IocEnum {
+  BookModule = 'BOOK_MODULE',
+}

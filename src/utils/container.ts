@@ -1,7 +1,9 @@
 import 'reflect-metadata';
-import { Container } from 'inversify';
-import { BookModule } from '../models';
+import { Container, decorate, injectable } from 'inversify';
+
+import { BookModule, IBookModule } from '../models';
+import { IocEnum } from '../types';
 
 export const container = new Container();
 
-container.bind(BookModule).toSelf();
+container.bind<IBookModule>(IocEnum.BookModule).to(BookModule);
