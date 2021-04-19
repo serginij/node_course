@@ -1,16 +1,21 @@
 import passport from 'passport';
-import { Strategy as LocalStrategy } from 'passport-local';
+import {
+  IStrategyOptions,
+  Strategy as LocalStrategy,
+  VerifyFunction,
+} from 'passport-local';
 
-import { User } from '../models';
-import { decryptPassword } from './bcrypt';
+import { container, decryptPassword } from '.';
+import { IUserModule } from '../models';
+import { IocEnum, IUser } from '../types';
 
-const verifyUser = async (
-  username: string,
-  pwd: string,
-  done: (...args: any) => void,
-) => {
+const User = container.get<IUserModule>(IocEnum.UserModule);
+
+const { getUserById, getUserByUsername } = User;
+
+const verifyUser: VerifyFunction = async (username, pwd, done) => {
   try {
-    const user = await User.findOne({ username }).select('-__v').lean();
+    const user = await getUserByUsername(username);
 
     if (!user) {
       return done(null, false);
@@ -27,21 +32,21 @@ const verifyUser = async (
   }
 };
 
-const passportOptions = {
+const passportOptions: IStrategyOptions = {
   usernameField: 'username',
   passwordField: 'password',
   passReqToCallback: false,
 };
 
-passport.use('local', new LocalStrategy(passportOptions as any, verifyUser));
+passport.use('local', new LocalStrategy(passportOptions, verifyUser));
 
-passport.serializeUser(function (user, cb) {
-  cb(null, (user as any)._id);
+passport.serializeUser((user: Express.User, cb: (...args: any) => void) => {
+  cb(null, (user as IUser)._id);
 });
 
-passport.deserializeUser(async (id, cb) => {
+passport.deserializeUser(async (id: string, cb: (...args: any) => void) => {
   try {
-    const user = await User.findById(id).select('-__v').lean();
+    const user = await getUserById(id);
     cb(null, user);
   } catch (err) {
     return cb(err);

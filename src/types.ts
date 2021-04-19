@@ -20,6 +20,7 @@ export interface IBookCreate {
 }
 
 export interface IUser {
+  _id: string;
   username: string;
   password: string;
   displayName: string;
@@ -40,4 +41,5 @@ export interface IMulterRequest extends Request {
 
 export enum IocEnum {
   BookModule = 'BOOK_MODULE',
+  UserModule = 'USER_MODULE',
 }

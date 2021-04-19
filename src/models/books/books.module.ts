@@ -66,8 +66,6 @@ export class BookModule implements IBookModule {
 
   updateBook = async (id: string, book: IBook) => {
     try {
-      // eslint-disable-next-line no-unused-vars
-
       return await Book.findByIdAndUpdate(id, book);
     } catch (err) {
       console.error(err);
