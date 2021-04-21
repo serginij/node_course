@@ -1,11 +1,11 @@
 import path from 'path';
 import { Request, Response } from 'express';
 
-import { IMulterRequest, IUserRequest } from '../../types';
-import { BookModule } from '../../models';
+import { IBook, IMulterRequest, IocEnum, IUserRequest } from '../../types';
 import { container } from '../../utils';
+import { IBookModule } from '../../models';
 
-const Book = container.get(BookModule);
+const Book = container.get<IBookModule>(IocEnum.BookModule);
 
 const {
   getBooks,
@@ -152,7 +152,7 @@ export const dowloadBook = async (req: Request, res: Response) => {
     if (!book) {
       res.status(404).redirect('/404');
     }
-    const { fileBook } = book;
+    const { fileBook } = book as IBook;
 
     res.download(path.join(__dirname, '..', fileBook), (err) => {
       if (err) {

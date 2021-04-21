@@ -1,4 +1,4 @@
 export { booksRouter } from './books/books.controller';
-export { userRouter } from './user';
-export { mainRouter } from './main';
-export { chatRouter } from './chat';
+export { userRouter } from './user/user.controller';
+export { mainRouter } from './main/main.controller';
+export { chatRouter } from './chat/chat.controller';

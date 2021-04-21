@@ -20,6 +20,7 @@ export interface IBookCreate {
 }
 
 export interface IUser {
+  _id: string;
   username: string;
   password: string;
   displayName: string;
@@ -34,6 +35,17 @@ export interface IUserRequest extends Request {
   logout: () => void;
 }
 
+export interface IMessage {
+  type: string;
+  text: string;
+  username: string;
+}
+
 export interface IMulterRequest extends Request {
   files: Record<string, Express.Multer.File[]>;
+}
+
+export enum IocEnum {
+  BookModule = 'BOOK_MODULE',
+  UserModule = 'USER_MODULE',
 }
