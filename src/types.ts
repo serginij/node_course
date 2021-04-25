@@ -41,10 +41,6 @@ export interface IMessage {
   username: string;
 }
 
-export interface IMulterRequest extends Request {
-  files: Record<string, Express.Multer.File[]>;
-}
-
 export enum IocEnum {
   BookModule = 'BOOK_MODULE',
   UserModule = 'USER_MODULE',
