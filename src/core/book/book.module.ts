@@ -1,4 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, HttpModule } from '@nestjs/common';
 
-@Module({})
-export class BookModule {}
+import { CoreBookService } from './book.service';
+
+@Module({
+  imports: [HttpModule],
+  providers: [CoreBookService],
+  exports: [CoreBookService],
+})
+export class CoreBookModule {}

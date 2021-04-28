@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { Request, Express } from 'express';
 
 export interface IBook {
   _id: string;
@@ -33,6 +33,10 @@ export interface IUserRequest extends Request {
     returnTo?: string;
   };
   logout: () => void;
+}
+
+export interface IMulterRequest extends Request {
+  files: Record<string, Express.Multer.File[]>;
 }
 
 export interface IMessage {
