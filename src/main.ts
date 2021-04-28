@@ -1,9 +1,24 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import path from 'path';
+import session from 'express-session';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // somewhere in your initialization file
+  app.use(
+    session({
+      secret: process.env.COOKIE_SECRET as string,
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
+
+  app.setViewEngine('ejs');
+  app.setBaseViewsDir(path.join(__dirname, 'views'));
 
   const logger = new Logger('Bootstrap');
 
