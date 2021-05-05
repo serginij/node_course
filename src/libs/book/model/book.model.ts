@@ -22,6 +22,6 @@ export class Book {
   public fileBook: string;
 }
 
-export type BookDocuemnt = Book & Document;
+export type BookDocument = Book & Document;
 
 export const BookSchema = SchemaFactory.createForClass(Book);

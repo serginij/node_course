@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Book, BookDocuemnt } from '../model/book.model';
+import { Book, BookDocument } from '../model/book.model';
 import { BookDto } from '../dto/book.dto';
 
 @Injectable()
 export class BookStore {
   constructor(
-    @InjectModel(Book.name) private readonly BookModel: Model<BookDocuemnt>, // @InjectConnection() private connection: Connection,
+    @InjectModel(Book.name) private readonly BookModel: Model<BookDocument>, // @InjectConnection() private connection: Connection,
   ) {}
 
-  createBook = async (book: BookDto): Promise<BookDocuemnt | null> => {
+  createBook = async (book: BookDto): Promise<BookDocument | null> => {
     try {
       const bookModel = new this.BookModel(book);
 
