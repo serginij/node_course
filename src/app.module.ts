@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { UtilsModule } from './utils/utils.module';
-import { CoreModule } from './core/core.module';
-import { ApiModule } from './api/api.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BookModule } from './libs/book/book.module';
 import { UserModule } from './libs/user/user.module';
@@ -16,8 +14,6 @@ const DB_URL = `mongodb+srv://user:${DB_PASS}@cluster0.hvmwr.mongodb.net/${DB_NA
 @Module({
   imports: [
     UtilsModule,
-    CoreModule,
-    ApiModule,
     MongooseModule.forRoot(DB_URL),
     BookModule,
     UserModule,

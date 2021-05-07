@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Res, Req } from '@nestjs/common';
-import { Book } from 'core/book/book.model';
+import { Book } from '../model/book.model';
 import path from 'path';
 import { BookService } from '../core/book.service';
 import { IUserRequest } from '../interface/book.interface';
