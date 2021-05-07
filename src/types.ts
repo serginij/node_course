@@ -1,5 +1,5 @@
-import { Request, Express } from 'express';
-
+import { Express } from 'express';
+// TODO: replace with mongooseSchema
 export interface IBook {
   _id: string;
   title: string;

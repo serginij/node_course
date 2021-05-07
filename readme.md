@@ -82,3 +82,31 @@ _form-data_
 | `POST` | `/api/books/update/:id`   | _(form-data)_ редактировать книгу по **id** | редактируем объект книги, если запись не найдено вернем **Code: 404**                       |
 | `POST` | `/api/books/delete/:id`   | удалить книгу по **id**                     | удаляем книгу и возвращаем ответ: **'ok'**                                                  |
 | `GET`  | `/api/books/:id/download` | скачать файл с книгой по **id** книги       | скачивается файл в формате **.pdf** или **.txt**                                            |
+
+## Module Architecture
+
+Рутовая директория для доменов (модули: Books, Main, User) - `libs`
+
+Опционально можно сложить `service`, `networking`, `store`, .... рядом без создания вложенных директорий
+
+```
+libs/
+  book/
+    core/ Различные файлы, модули, чистые, без деталей (бд, роуты), должны быть Injectable, похер на окружающий мир
+      book.service.ts - обработка логики, без валидации
+    networking/ Сервисы, которые инкапсулируют запросы
+      book.networking.ts -- Внутри набор методов, которые дергают httpModule (запросы к микросервисам, сторонним api)
+    store/
+      book.store.ts -- работа с базами, другими хранилищами данных
+    routes (controllers)/ -- Обработчки http и не только запросов
+      book.controller.ts -- Валидация, DTO
+    dto/
+      book.dto.ts
+    interfaces/
+      book.interfaces.ts
+    models/
+      book.model.ts
+    book.module.ts
+  main/
+  user/
+```
