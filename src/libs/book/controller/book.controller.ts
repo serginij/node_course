@@ -1,13 +1,24 @@
-import { Controller, Get, Post, Res, Req } from '@nestjs/common';
-import { Book } from '../model/book.model';
+import {
+  Controller,
+  Get,
+  Post,
+  Res,
+  Req,
+  UseInterceptors,
+  UsePipes,
+  Param,
+  Body,
+  ValidationPipe,
+} from '@nestjs/common';
 import path from 'path';
 import { BookService } from '../core/book.service';
 import { IUserRequest } from '../interface/book.interface';
+import { FormatterInterceptor } from 'common/interceptor/formatter.interceptor';
+import { StringValidationPipe } from 'common/pipes/validation.pipe';
+import { BookDto } from '../dto/book.dto';
 
-// TODO: add DTO validation && replace coreBookService with bookService
-// Add @Body
-// Replace IBook with Book model or BookDto
-@Controller('book')
+@Controller('books')
+@UseInterceptors(FormatterInterceptor)
 export class BookController {
   constructor(private readonly bookService: BookService) {}
 
@@ -71,9 +82,10 @@ export class BookController {
   }
 
   // TODO: add file middleware
+  @UsePipes(new ValidationPipe())
   @Post('/create')
-  async createBook(@Req() req, @Res() res) {
-    const { files, body } = req;
+  async createBook(@Body() body: BookDto, @Req() req, @Res() res) {
+    const { files } = req;
     const { fileBook, fileCover } = files;
 
     try {
@@ -81,7 +93,7 @@ export class BookController {
         ...body,
         fileBook: fileBook[0].path,
         fileCover: fileCover?.[0]?.path || '',
-        favorite: body.favorite === 'on',
+        favorite: !!body.favorite,
       });
 
       if (book) {
@@ -134,10 +146,9 @@ export class BookController {
     }
   }
 
+  @UsePipes(StringValidationPipe)
   @Post('/delete/:id')
-  async deleteBook(@Req() req, @Res() res) {
-    const { id } = req.params;
-
+  async deleteBook(@Param() id: string, @Res() res) {
     try {
       const status = await this.bookService.deleteBook(id);
 
@@ -160,7 +171,7 @@ export class BookController {
       if (!book) {
         res.status(404).redirect('/404');
       }
-      const { fileBook } = book as Book;
+      const { fileBook } = book as BookDto;
 
       res.download(path.join(__dirname, '..', fileBook), (err) => {
         if (err) {
