@@ -92,14 +92,14 @@ _form-data_
 ```
 libs/
   book/
-    core/ Различные файлы, модули, чистые, без деталей (бд, роуты), должны быть Injectable, похер на окружающий мир
+    core/ Различные файлы, модули, чистые, без деталей, Injectable
       book.service.ts - обработка логики, без валидации
     networking/ Сервисы, которые инкапсулируют запросы
-      book.networking.ts -- Внутри набор методов, которые дергают httpModule (запросы к микросервисам, сторонним api)
+      book.networking.ts -- Внутри набор методов, которые дергают httpModul (запросы к микросервисам, сторонним api)
     store/
       book.store.ts -- работа с базами, другими хранилищами данных
-    routes (controllers)/ -- Обработчки http и не только запросов
-      book.controller.ts -- Валидация, DTO
+    routes (controllers)/ -- Обработчки http (и не только) запросов
+      book.controller.ts -- Валидация (например, с помощью DTO)
     dto/
       book.dto.ts
     interfaces/

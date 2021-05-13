@@ -4,11 +4,11 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import path from 'path';
 import session from 'express-session';
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from 'common/filters/exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // somewhere in your initialization file
   app.use(
     session({
       secret: process.env.COOKIE_SECRET as string,
@@ -19,6 +19,7 @@ async function bootstrap() {
 
   app.setViewEngine('ejs');
   app.setBaseViewsDir(path.join(__dirname, 'views'));
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   const logger = new Logger('Bootstrap');
 

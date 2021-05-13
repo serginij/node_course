@@ -3,10 +3,10 @@ FROM node:alpine
 WORKDIR /
 
 COPY . .
-RUN npm install && npm install tsc -g
+RUN npm install
 RUN npm run build
 COPY src src
-COPY src/views build/views
+COPY src/views dist/views
 
 EXPOSE 3000
 

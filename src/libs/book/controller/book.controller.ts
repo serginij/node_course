@@ -1,15 +1,30 @@
-import { Injectable, Res, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Res,
+  Req,
+  UseInterceptors,
+  UsePipes,
+  Param,
+  Body,
+  ValidationPipe,
+} from '@nestjs/common';
 import path from 'path';
+import { BookService } from '../core/book.service';
+import { IUserRequest } from '../interface/book.interface';
+import { FormatterInterceptor } from 'common/interceptor/formatter.interceptor';
+import { StringValidationPipe } from 'common/pipes/validation.pipe';
+import { BookDto } from '../dto/book.dto';
 
-import { CoreBookService } from 'core/book/book.service';
-import { IBook, IUserRequest } from 'types';
+@Controller('books')
+@UseInterceptors(FormatterInterceptor)
+export class BookController {
+  constructor(private readonly bookService: BookService) {}
 
-@Injectable()
-export class BookService {
-  constructor(private readonly coreBookService: CoreBookService) {}
-
+  @Get()
   async getAll(@Res() res) {
-    const books = await this.coreBookService.getBooks();
+    const books = await this.bookService.getBooks();
 
     if (books) {
       res.render('books/list', {
@@ -21,16 +36,18 @@ export class BookService {
     }
   }
 
-  async renderNewBook(@Res() res) {
+  @Get('/create')
+  getNewBookPage(@Res() res) {
     res.render('books/create', {
       title: 'Book create',
       book: { isNew: true },
     });
   }
 
-  async renderBookById(@Req() req, @Res() res) {
+  @Get('/update/:id')
+  async getUpdateBookPage(@Req() req, @Res() res) {
     const { id } = req.params;
-    const book = await this.coreBookService.getBookById(id);
+    const book = await this.bookService.getBookById(id);
 
     if (!book) {
       res.status(404).redirect('/404');
@@ -42,10 +59,11 @@ export class BookService {
     });
   }
 
-  async getBook(@Req() req, @Res() res) {
+  @Get('/:id')
+  async getBookById(@Req() req, @Res() res) {
     const { id } = req.params;
     try {
-      const book = await this.coreBookService.getBookById(id);
+      const book = await this.bookService.getBookById(id);
       const { displayName } = (req as IUserRequest).user;
 
       if (book) {
@@ -63,16 +81,19 @@ export class BookService {
     }
   }
 
-  async createBook(@Req() req, @Res() res) {
-    const { files, body } = req;
+  // TODO: add file middleware
+  @UsePipes(new ValidationPipe())
+  @Post('/create')
+  async createBook(@Body() body: BookDto, @Req() req, @Res() res) {
+    const { files } = req;
     const { fileBook, fileCover } = files;
 
     try {
-      const book = await this.coreBookService.createBook({
+      const book = await this.bookService.createBook({
         ...body,
         fileBook: fileBook[0].path,
         fileCover: fileCover?.[0]?.path || '',
-        favorite: body.favorite === 'on',
+        favorite: !!body.favorite,
       });
 
       if (book) {
@@ -88,6 +109,8 @@ export class BookService {
     }
   }
 
+  // TODO: add file middleware
+  @Post('/update/:id')
   async updateBook(@Req() req, @Res() res) {
     const { files, params, body } = req;
     const { id } = params;
@@ -112,7 +135,7 @@ export class BookService {
         favorite: favorite === 'on',
       };
 
-      const status = await this.coreBookService.updateBook(id, book);
+      const status = await this.bookService.updateBook(id, book);
 
       if (!status) throw 'An error occured while saving book';
 
@@ -123,11 +146,11 @@ export class BookService {
     }
   }
 
-  async deleteBook(@Req() req, @Res() res) {
-    const { id } = req.params;
-
+  @UsePipes(StringValidationPipe)
+  @Post('/delete/:id')
+  async deleteBook(@Param() id: string, @Res() res) {
     try {
-      const status = await this.coreBookService.deleteBook(id);
+      const status = await this.bookService.deleteBook(id);
 
       if (!status) throw 'An error occured while deleting book';
 
@@ -138,16 +161,17 @@ export class BookService {
     }
   }
 
-  async downloadBook(@Req() req, @Res() res) {
+  @Get('/:id/download')
+  async downloadBookById(@Req() req, @Res() res) {
     const { id } = req.params;
 
     try {
-      const book = await this.coreBookService.getBookById(id);
+      const book = await this.bookService.getBookById(id);
 
       if (!book) {
         res.status(404).redirect('/404');
       }
-      const { fileBook } = book as IBook;
+      const { fileBook } = book as BookDto;
 
       res.download(path.join(__dirname, '..', fileBook), (err) => {
         if (err) {

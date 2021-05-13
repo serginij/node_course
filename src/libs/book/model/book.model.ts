@@ -1,7 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import { SchemaFactory, Schema, Prop } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 @Schema()
+@Injectable()
 export class Book {
   @Prop({ required: true })
   public title: string;
@@ -22,6 +24,6 @@ export class Book {
   public fileBook: string;
 }
 
-export type BookDocuemnt = Book & Document;
+export type BookDocument = Book & Document;
 
 export const BookSchema = SchemaFactory.createForClass(Book);
