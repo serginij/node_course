@@ -7,7 +7,7 @@ import { BookDto } from '../dto/book.dto';
 @Injectable()
 export class BookStore {
   constructor(
-    @InjectModel(Book.name) private readonly BookModel: Model<BookDocument>, // @InjectConnection() private connection: Connection,
+    @InjectModel(Book.name) private readonly BookModel: Model<BookDocument>,
   ) {}
 
   createBook = async (book: BookDto): Promise<BookDocument | null> => {
