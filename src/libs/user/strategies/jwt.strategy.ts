@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { UserService } from 'libs/user/core/user.service';
+import { UserService } from 'src/libs/user/core/user.service';
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
