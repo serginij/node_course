@@ -78,8 +78,8 @@ export class BookController {
   }
 
   // TODO: add file middleware
-  @UsePipes(new ValidationPipe())
   @Post('/create')
+  @UsePipes(new ValidationPipe())
   async createBook(@Body() body: BookDto, @Res() res) {
     try {
       const book = await this.bookService.createBook(body);
@@ -137,11 +137,11 @@ export class BookController {
       const book = await this.bookService.getBookById(id);
 
       if (!book) {
-        res.status(404).redirect('/404');
+        return res.status(404).redirect('/404');
       }
-      const { fileBook } = book as BookDto;
+      const { fileBook } = book;
 
-      res.download(path.join(__dirname, '..', fileBook), (err) => {
+      res.download(path.join(__dirname, '..', fileBook || ''), (err) => {
         if (err) {
           console.error(err);
           res.status(404).redirect('/404');

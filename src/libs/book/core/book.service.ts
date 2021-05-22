@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { Book } from '../model/book.model';
 import { BookNetworking } from '../networking/book.networking';
-import { BookStore } from '../store/book.store';
+import { BookFirebaseStore } from '../store/book.firebase.store';
 
 @Injectable()
 export class BookService {
   constructor(
-    private readonly BookStore: BookStore,
+    private readonly BookStore: BookFirebaseStore,
     private readonly BookNetworking: BookNetworking,
   ) {}
 
-  createBook = (book: Book): Promise<Book | null> => {
+  createBook = (book: Book): Promise<string | null> => {
     return this.BookStore.createBook(book);
   };
 

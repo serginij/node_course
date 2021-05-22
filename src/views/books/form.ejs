@@ -74,9 +74,16 @@
 
   form.onsubmit = async e => {
     e.preventDefault()
+    const data = new FormData(form);
+    const value = Object.fromEntries(data.entries());
+    const { fileBook, fileCover, ...body } = value
+    
     const res = await fetch(``, {
       method: 'POST',
-      body: new FormData(form)
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json'
+      },
     })
 
     if([200, 201].includes(res.status)) {
@@ -84,11 +91,7 @@
     }
   }
 
-  const isNew = <%= book.isNew || false %>;
-  
-  if(isNew && document.getElementById('inputBookFile')) {
-    document.getElementById('inputBookFile').required = true
-  }
+  const isNew = <%= book.isNew || false %>
 
   inputFavorite.checked = <%= !!book.favorite %>;
 </script>
