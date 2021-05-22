@@ -4,24 +4,18 @@ import {
   Post,
   Res,
   Req,
-  UseInterceptors,
   UsePipes,
   Param,
   Body,
   ValidationPipe,
-  UseGuards,
 } from '@nestjs/common';
 import path from 'path';
 import { BookService } from '../core/book.service';
-import { IUserRequest } from '../interface/book.interface';
-import { FormatterInterceptor } from 'src/common/interceptor/formatter.interceptor';
+
 import { StringValidationPipe } from 'src/common/pipes/validation.pipe';
 import { BookDto } from '../dto/book.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('books')
-@UseGuards(JwtAuthGuard)
-@UseInterceptors(FormatterInterceptor)
 export class BookController {
   constructor(private readonly bookService: BookService) {}
 
@@ -67,13 +61,12 @@ export class BookController {
     const { id } = req.params;
     try {
       const book = await this.bookService.getBookById(id);
-      const { displayName } = (req as IUserRequest).user;
 
       if (book) {
         res.render('books/view', {
           title: 'Book view',
           book,
-          displayName,
+          displayName: '',
         });
       } else {
         res.redirect('/books');
@@ -87,17 +80,9 @@ export class BookController {
   // TODO: add file middleware
   @UsePipes(new ValidationPipe())
   @Post('/create')
-  async createBook(@Body() body: BookDto, @Req() req, @Res() res) {
-    const { files } = req;
-    const { fileBook, fileCover } = files;
-
+  async createBook(@Body() body: BookDto, @Res() res) {
     try {
-      const book = await this.bookService.createBook({
-        ...body,
-        fileBook: fileBook[0].path,
-        fileCover: fileCover?.[0]?.path || '',
-        favorite: !!body.favorite,
-      });
+      const book = await this.bookService.createBook(body);
 
       if (book) {
         res.status(200).redirect('/books');
@@ -115,30 +100,10 @@ export class BookController {
   // TODO: add file middleware
   @Post('/update/:id')
   async updateBook(@Req() req, @Res() res) {
-    const { files, params, body } = req;
+    const { params, body } = req;
     const { id } = params;
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { fileBook, fileCover, favorite, ...data } = body;
-
-      const bookFile: { fileBook?: string } = {};
-      const cover: { fileCover?: string } = {};
-
-      if (files) {
-        const { fileBook, fileCover } = files;
-
-        if (fileBook?.[0]) bookFile.fileBook = fileBook[0].path;
-        if (fileCover?.[0]) cover.fileCover = fileCover[0].path;
-      }
-
-      const book = {
-        ...data,
-        ...bookFile,
-        ...cover,
-        favorite: favorite === 'on',
-      };
-
-      const status = await this.bookService.updateBook(id, book);
+      const status = await this.bookService.updateBook(id, body);
 
       if (!status) throw 'An error occured while saving book';
 
