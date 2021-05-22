@@ -14,10 +14,10 @@ import {
 import path from 'path';
 import { BookService } from '../core/book.service';
 import { IUserRequest } from '../interface/book.interface';
-import { FormatterInterceptor } from 'common/interceptor/formatter.interceptor';
-import { StringValidationPipe } from 'common/pipes/validation.pipe';
+import { FormatterInterceptor } from 'src/common/interceptor/formatter.interceptor';
+import { StringValidationPipe } from 'src/common/pipes/validation.pipe';
 import { BookDto } from '../dto/book.dto';
-import { JwtAuthGuard } from 'common/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('books')
 @UseGuards(JwtAuthGuard)
