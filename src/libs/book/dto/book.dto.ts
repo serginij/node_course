@@ -21,7 +21,7 @@ export class BookDto {
   @IsString()
   fileCover: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   fileBook: string;
 }

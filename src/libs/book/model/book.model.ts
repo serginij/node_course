@@ -20,7 +20,7 @@ export class Book {
   @Prop({ default: '' })
   public fileCover: string;
 
-  @Prop({ required: true })
+  @Prop({ default: '' })
   public fileBook: string;
 }
 

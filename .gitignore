@@ -12,6 +12,7 @@ lerna-debug.log*
 
 # Env
 *.env
+firebase-credential.json
 
 # OS
 .DS_Store
